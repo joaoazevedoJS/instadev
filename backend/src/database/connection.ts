@@ -1,15 +1,12 @@
 import knex from 'knex'
-
-import { host, user, password, database } from '../configs/database.json'
+import path from 'path'
 
 const connection = knex({
-  client: 'mysql',
+  client: 'sqlite3',
   connection: {
-    host,
-    user,
-    password,
-    database
-  }
+    filename: path.resolve(__dirname, 'database.sqlite')
+  },
+  useNullAsDefault: true
 })
 
 export default connection

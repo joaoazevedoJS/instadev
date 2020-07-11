@@ -1,14 +1,9 @@
 import path from 'path'
 
-import { host, user, password, database } from './src/configs/database.json'
-
 module.exports = {
-  client: 'mysql',
+  client: 'sqlite3',
   connection: {
-    host,
-    user,
-    password,
-    database
+    filename: path.resolve(__dirname, 'src', 'database', 'database.sqlite')
   },
   migrations: {
     directory: path.resolve(__dirname, 'src', 'database', 'migrations')
