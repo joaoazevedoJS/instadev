@@ -12,6 +12,7 @@ export async function up (knex: Knex) {
     table.integer('following')
     table.integer('followers')
     table.integer('publications')
+    table.boolean('confirmAccount')
   })
 }
 
