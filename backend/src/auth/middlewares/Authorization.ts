@@ -27,13 +27,13 @@ function Authorization (req: Request, res: Response, next: NextFunction) {
   jwt.verify(token, hash, async (err, decoded: Decoded) => {
     if (err) return res.status(401).json({ error: 'Invalid Token' })
 
-    const id = decoded.id
+    const userId = decoded.id
 
-    const user = await knex('users').where('id', id).first()
+    const user = await knex('users').where('id', userId).first()
 
     if (!user) return res.status(404).json({ error: 'User not Found' })
 
-    req.userSession = { id }
+    req.userSession = { userId }
 
     return next()
   })

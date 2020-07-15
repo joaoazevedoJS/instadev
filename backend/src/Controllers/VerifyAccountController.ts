@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 
 import knex from '../database/connection'
 
-class VerifySignUp {
+class VerifyAccountController {
   async verifyEmail (req: Request, res: Response) {
     const { email } = req.body
 
@@ -30,6 +30,23 @@ class VerifySignUp {
     userNameExists ? res.json({ exists: true })
       : res.json({ exists: false })
   }
+
+  async verifyCode (req: Request, res: Response) {
+    const { userId } = req.userSession
+    const { code } = req.params
+
+    const { accountCode } = await knex('users')
+      .select('accountCode')
+      .where('id', userId).first()
+
+    if (code !== accountCode) return res.status(401).json({ error: 'Code Not Exists' })
+
+    await knex('users')
+      .where('id', userId)
+      .update('confirmAccount', true)
+
+    return res.send('')
+  }
 }
 
-export default VerifySignUp
+export default VerifyAccountController

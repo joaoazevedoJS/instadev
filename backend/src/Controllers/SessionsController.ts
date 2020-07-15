@@ -3,12 +3,10 @@ import { Request, Response } from 'express'
 import bycript from 'bcryptjs'
 
 import GenerateToken from '../utils/GenerateToken'
+import randomCode from '../utils/randomCode'
+
 import knex from '../database/connection'
 import mailer from '../smtp/mailer'
-
-interface Options {
-  template: string
-}
 
 class SessionsController {
   async signup (req: Request, res: Response) {
@@ -23,13 +21,15 @@ class SessionsController {
 
     try {
       const hash = await bycript.hash(password, 10)
+      const accountCode = randomCode(6)
 
       const userDate = {
         email,
         user_name,
         name,
         password: hash,
-        confirmAccount: false
+        confirmAccount: false,
+        accountCode
       }
 
       const [id] = await knex('users').insert(userDate)
@@ -39,7 +39,8 @@ class SessionsController {
       mailer.sendMail({
         to: email,
         from: 'emailTest@Mailfake.com',
-        template: 'confirm_account'
+        template: 'confirm_account',
+        context: { accountCode }
       })
 
       res.json({ id, ...userDate })
