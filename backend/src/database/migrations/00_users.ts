@@ -14,6 +14,8 @@ export async function up (knex: Knex) {
     table.integer('publications')
     table.boolean('confirmAccount')
     table.string('accountCode')
+    table.integer('limit_resend')
+    table.date('limit_date_resend')
   })
 }
 

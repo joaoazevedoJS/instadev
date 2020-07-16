@@ -1,3 +1,43 @@
-<div>
-  <h1>Seu código é {{ accountCode }}</h1>
+<div align="center"
+  style="font-family: Helvetica Neue,Helvetica,Lucida Grande,tahoma,verdana,arial,sans-serif;background:#ffffff">
+  <table style="width:430px">
+    <tbody>
+      <tr>
+        <td style="border-bottom: 0.5px solid #c0c0c0;">
+          <img src="http://files.joaoazevedojs.com.br/instadev/logo.svg" alt="logo" width="144px">
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p style="color:#565a5c; font-size:18px; margin-top: 24px;">Olá,</p>
+          <p style="color:#565a5c; font-size:18px; line-height: 145%;">
+            Alguém tentou se inscrever em uma conta do
+            <span style="color: #222222; background: #fffccc;">
+              Instadev
+            </span> com {{ email }}.
+            Se foi você, digite este código de confirmação no aplicativo:
+          </p>
+          <p style="width: 100%; font-weight: bold; color:#565a5c; font-size:32px; margin: 40px 0px; text-align: center;">
+            {{ accountCode }}
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p style="color:#565a5c; font-size:14px;">
+            By
+            <a
+              href="http://github.com/joaoazevedojs"
+              target="_blank"
+              style="text-decoration: none; color:#565a5c; font-weight: bold;"
+            >
+              JoaoazevedoJS
+            </a>
+          </p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

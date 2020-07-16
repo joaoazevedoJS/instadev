@@ -14,14 +14,15 @@ const webAuth = new WebAuthController()
 
 routes.get('/verify-email-account', verify.verifyEmail)
 routes.get('/verify-username-account', verify.verifyUserName)
-routes.put('/verify-code-account/:code', Authorization, verify.verifyCode)
+routes.get('/verify-code-account', Authorization, verify.verifyCode)
 
 routes.post('/signup', sessions.signup)
 routes.post('/signin', sessions.signin)
 
-routes.use(Authorization)
+routes.use('/user', Authorization)
 
 routes.get('/user/authenticated', webAuth.authenticated)
-routes.get('/user/confirmAccount', webAuth.confirmAccount)
+routes.put('/user/confirm-account/:code', webAuth.confirmAccount)
+routes.put('/user/resend-code', webAuth.resendCode)
 
 export default routes

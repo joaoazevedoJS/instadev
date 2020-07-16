@@ -4,9 +4,9 @@ import bycript from 'bcryptjs'
 
 import GenerateToken from '../utils/GenerateToken'
 import randomCode from '../utils/randomCode'
+import SendMail from '../utils/SendMail'
 
 import knex from '../database/connection'
-import mailer from '../smtp/mailer'
 
 class SessionsController {
   async signup (req: Request, res: Response) {
@@ -34,14 +34,9 @@ class SessionsController {
 
       const [id] = await knex('users').insert(userDate)
 
-      userDate.password = undefined
+      await SendMail(email, 'no-reply@mail.instadev.com', 'confirm_account', { email, accountCode })
 
-      mailer.sendMail({
-        to: email,
-        from: 'emailTest@Mailfake.com',
-        template: 'confirm_account',
-        context: { accountCode }
-      })
+      userDate.password = undefined
 
       res.json({ id, ...userDate })
     } catch (e) {
