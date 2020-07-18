@@ -9,7 +9,7 @@ export async function up (knex: Knex) {
     table.integer('views')
     table.date('date').notNullable()
     table.integer('user_id').notNullable()
-      .references('id').inTable('user')
+      .references('id').inTable('users')
   })
 }
 

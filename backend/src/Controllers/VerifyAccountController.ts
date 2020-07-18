@@ -30,18 +30,6 @@ class VerifyAccountController {
     userNameExists ? res.json({ exists: true })
       : res.json({ exists: false })
   }
-
-  async verifyCode (req: Request, res: Response) {
-    const { userId } = req.userSession
-
-    const { confirmAccount } = await knex('users')
-      .select('confirmAccount')
-      .where('id', userId).first()
-
-    if (!!confirmAccount === false) return res.status(401).json({ error: 'Email not Verified' })
-
-    return res.status(200).json({ sucess: 'Email Verified' })
-  }
 }
 
 export default VerifyAccountController
