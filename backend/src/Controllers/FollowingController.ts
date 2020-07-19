@@ -5,15 +5,21 @@ import knex from '../database/connection'
 
 class FollowingController {
   async index (req: Request, res: Response) {
-    const { userId } = req.userSession
-    let { order } = req.query
+    const { id } = req.params
+    let { order, page } = req.query
 
     if (order !== 'desc' && order !== 'asc') {
       order = 'asc'
     }
 
     const following = await knex('following')
-      .where('user_id', userId).orderBy('id', order)
+      .where('user_id', id).orderBy('id', order)
+      .limit(10)
+      .offset((Number(page) - 1) * 10)
+      .select([
+        'id',
+        'following_id'
+      ])
 
     return res.json(following)
   }
