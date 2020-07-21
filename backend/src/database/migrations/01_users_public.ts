@@ -4,6 +4,8 @@ import Knex from 'knex'
 export async function up (knex: Knex) {
   return knex.schema.createTable('publications', table => {
     table.increments('id').primary()
+    table.string('photo').notNullable()
+    table.string('legend')
     table.integer('likes')
     table.integer('comments')
     table.integer('views')

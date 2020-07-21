@@ -14,6 +14,9 @@ class UserController {
     const [Followers] = await knex('following')
       .where('following_id', id).count()
 
+    const [publications] = await knex('publications')
+      .where('user_id', id).count()
+
     const user = await knex('users')
       .select('name')
       .select('user_name')
@@ -21,7 +24,8 @@ class UserController {
 
     res.header({
       'X-Total-Following': following['count(*)'],
-      'X-Total-Followers': Followers['count(*)']
+      'X-Total-Followers': Followers['count(*)'],
+      'X-Total-Publications': publications['count(*)']
     })
 
     return res.json(user)
