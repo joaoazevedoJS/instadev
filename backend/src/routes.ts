@@ -36,6 +36,7 @@ routes.get('/users/dashboard', URLDashboard, user.show)
 routes.get('/users/following', URLDashboard, following.index)
 routes.get('/users/followers', URLDashboard, followers.index)
 routes.get('/users/publications', URLDashboard, publications.index)
+routes.get('/users/publications/likes/:PublicationId', LikesPublications.index)
 
 // user - private
 
@@ -50,6 +51,7 @@ routes.delete('/user/action/unfollowing/:followId', isMailVerified, following.de
 routes.post('/user/action/publications', isMailVerified, publications.store)
 routes.delete('/user/action/publications/:PublicationId', isMailVerified, publications.destroy)
 routes.post('/user/action/like/publication/:PublicationId', isMailVerified, LikesPublications.store)
+routes.post('/user/action/unlike/publication/:PublicationId', isMailVerified, LikesPublications.destroy)
 routes.put('/user/action/resend-code', webAuth.resendCode)
 
 // web action

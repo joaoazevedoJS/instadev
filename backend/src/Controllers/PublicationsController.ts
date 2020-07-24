@@ -9,7 +9,7 @@ class PublicationsController {
     const { page } = req.query
 
     const publications = await knex('publications')
-      .where('user_id', id)
+      .where('user_id', Number(id))
       .limit(20)
       .offset((Number(page) - 1) * 20)
 
