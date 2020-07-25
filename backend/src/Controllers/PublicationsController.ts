@@ -2,6 +2,7 @@
 import { Request, Response } from 'express'
 
 import knex from '../database/connection'
+import nowDateUTC from '../utils/NowDateUTC'
 
 class PublicationsController {
   async index (req: Request, res: Response) {
@@ -9,7 +10,11 @@ class PublicationsController {
     const { page } = req.query
 
     const publications = await knex('publications')
-      .where('user_id', Number(id))
+      .leftJoin('public_likes', 'public_likes.publication_id', '=', 'publications.id')
+      .where('publications.user_id', Number(id))
+      .groupBy('publications.id')
+      .select('publications.*')
+      .count('public_likes.publication_id', { as: 'likes' })
       .limit(20)
       .offset((Number(page) - 1) * 20)
 
@@ -20,10 +25,12 @@ class PublicationsController {
     const { userId } = req.userSession
     const { legend } = req.body
 
+    const date = nowDateUTC()
+
     const data = {
       photo: 'tempImage.jpg',
       legend,
-      date: new Date(),
+      date,
       user_id: userId
     }
 

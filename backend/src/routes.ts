@@ -42,16 +42,21 @@ routes.get('/users/publications/likes/:PublicationId', LikesPublications.index)
 
 routes.use('/user', Authorization)
 
+routes.put('/user/update-account', user.update)
+
 routes.put('/user/confirm-account/:code', webAuth.confirmAccount)
 
 // user actions
 
 routes.post('/user/action/following/:followId', isMailVerified, following.store)
 routes.delete('/user/action/unfollowing/:followId', isMailVerified, following.destroy)
+
 routes.post('/user/action/publications', isMailVerified, publications.store)
 routes.delete('/user/action/publications/:PublicationId', isMailVerified, publications.destroy)
+
 routes.post('/user/action/like/publication/:PublicationId', isMailVerified, LikesPublications.store)
-routes.post('/user/action/unlike/publication/:PublicationId', isMailVerified, LikesPublications.destroy)
+routes.delete('/user/action/unlike/publication/:PublicationId', isMailVerified, LikesPublications.destroy)
+
 routes.put('/user/action/resend-code', webAuth.resendCode)
 
 // web action

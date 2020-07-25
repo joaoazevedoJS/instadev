@@ -6,8 +6,6 @@ export async function up (knex: Knex) {
     table.increments('id').primary()
     table.string('photo').notNullable()
     table.string('legend')
-    table.integer('likes')
-    table.integer('comments')
     table.integer('views')
     table.date('date').notNullable()
     table.integer('user_id').notNullable()

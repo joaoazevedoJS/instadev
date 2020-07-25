@@ -13,6 +13,7 @@ export async function up (knex: Knex) {
     table.string('accountCode', 6).notNullable()
     table.integer('limit_resend')
     table.date('limit_date_resend')
+    table.boolean('privateAccount').notNullable()
   })
 }
 

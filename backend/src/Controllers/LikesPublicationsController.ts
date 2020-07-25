@@ -2,7 +2,6 @@
 import { Request, Response } from 'express'
 
 import knex from '../database/connection'
-import UpdateLike from '../utils/UpdateLike'
 
 // Proximo dia - Criar Banco de dados N-N, fazer indice de quais publicações o usuario curtio, etc
 class LikesPublicationsController {
@@ -29,10 +28,13 @@ class LikesPublicationsController {
 
     if (AlreadyLiked) return res.status(401).json({ error: 'you can\'t liked again' })
 
+    const ExistsPublication = await knex('publications')
+      .where('id', Number(PublicationId)).first()
+
+    if (!ExistsPublication) return res.status(404).json({ error: 'Publication not Found' })
+
     try {
       const [id] = await knex('public_likes').insert(data)
-
-      await UpdateLike(Number(PublicationId))
 
       return res.json({ id, ...data })
     } catch (e) {
@@ -52,8 +54,6 @@ class LikesPublicationsController {
     try {
       await knex('public_likes')
         .where(data).first().delete()
-
-      await UpdateLike(Number(PublicationId))
 
       return res.send('')
     } catch (e) {

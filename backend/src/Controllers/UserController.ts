@@ -11,7 +11,7 @@ class UserController {
     const [following] = await knex('following')
       .where('user_id', id).count()
 
-    const [Followers] = await knex('following')
+    const [followers] = await knex('following')
       .where('following_id', id).count()
 
     const [publications] = await knex('publications')
@@ -20,15 +20,31 @@ class UserController {
     const user = await knex('users')
       .select('name')
       .select('user_name')
+      .select('privateAccount')
       .where('id', id).first()
 
     res.header({
       'X-Total-Following': following['count(*)'],
-      'X-Total-Followers': Followers['count(*)'],
+      'X-Total-Followers': followers['count(*)'],
       'X-Total-Publications': publications['count(*)']
     })
 
     return res.json(user)
+  }
+
+  async update (req: Request, res: Response) {
+    const { userId } = req.userSession
+    const { privateAccount } = req.body
+
+    try {
+      await knex('users')
+        .where('id', userId)
+        .update('privateAccount', Boolean(privateAccount))
+
+      return res.send()
+    } catch (e) {
+      return res.status(500).json({ error: 'Error, try again!' })
+    }
   }
 }
 

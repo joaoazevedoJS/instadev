@@ -29,7 +29,8 @@ class SessionsController {
         name,
         password: hash,
         confirmAccount: false,
-        accountCode
+        accountCode,
+        privateAccount: false
       }
 
       const [id] = await knex('users').insert(userDate)

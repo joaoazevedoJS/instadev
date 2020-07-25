@@ -4,6 +4,7 @@ import { Request, Response } from 'express'
 import knex from '../database/connection'
 
 import SendMail from '../utils/SendMail'
+import nowDateUTC from '../utils/NowDateUTC'
 
 class WebAuthController {
   authenticated (req: Request, res: Response) {
@@ -38,7 +39,6 @@ class WebAuthController {
       .where('id', userId).first()
 
     const date = new Date()
-    const dateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + 3))
 
     user.password = undefined
 
@@ -47,13 +47,15 @@ class WebAuthController {
     const trx = await knex.transaction()
 
     if (user.limit_resend === 3) {
+      const dateUTC = nowDateUTC(3)
+
       await trx('users')
         .where('id', userId)
         .update('limit_date_resend', dateUTC)
     }
 
     if (user.limit_resend > 3) {
-      if (user.limit_date_resend < date) {
+      if (new Date(Date.parse(user.limit_date_resend)) < date) {
         await trx('users')
           .where('id', userId)
           .update('limit_resend', 0)
