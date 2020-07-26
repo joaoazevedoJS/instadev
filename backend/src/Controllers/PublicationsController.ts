@@ -14,6 +14,7 @@ class PublicationsController {
       .where('publications.user_id', Number(id))
       .groupBy('publications.id')
       .select('publications.*')
+      .orderBy('publications.date', 'desc')
       .count('public_likes.publication_id', { as: 'likes' })
       .limit(20)
       .offset((Number(page) - 1) * 20)

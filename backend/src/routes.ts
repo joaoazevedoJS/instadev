@@ -8,6 +8,8 @@ import FollowingController from './Controllers/FollowingController'
 import FollowersController from './Controllers/FollowersController'
 import PublicationsController from './Controllers/PublicationsController'
 import LikesPublicationsController from './Controllers/LikesPublicationsController'
+import HomePublicationsController from './Controllers/HomePublicationsController'
+import GlobalPublicationsController from './Controllers/GlobalPublicationsController'
 
 import Authorization from './auth/middlewares/Authorization'
 import isMailVerified from './middlewares/isMailVerified'
@@ -22,6 +24,8 @@ const following = new FollowingController()
 const followers = new FollowersController()
 const publications = new PublicationsController()
 const LikesPublications = new LikesPublicationsController()
+const HomePublications = new HomePublicationsController()
+const GlobalPublications = new GlobalPublicationsController()
 const webAuth = new WebAuthController()
 
 routes.get('/verify-email-account', verify.verifyEmail)
@@ -42,6 +46,8 @@ routes.get('/users/publications/likes/:PublicationId', LikesPublications.index)
 
 routes.use('/user', Authorization)
 
+routes.get('/user/home/publications', HomePublications.index)
+routes.get('/user/explore/publications', GlobalPublications.index)
 routes.put('/user/update-account', user.update)
 
 routes.put('/user/confirm-account/:code', webAuth.confirmAccount)
