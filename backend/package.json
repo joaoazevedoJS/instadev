@@ -4,7 +4,7 @@
   "description": "Instagram clone - backend",
   "main": "index.ts",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
     "knex:migrate": "knex --knexfile knexfile.ts migrate:latest"
   },
   "keywords": [],

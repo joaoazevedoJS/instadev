@@ -10,7 +10,7 @@ async function URLDashboard (req: Request, res: Response, next: NextFunction) {
 
   const id = await knex('users')
     .select('id')
-    .where('user_name', String(user)).first()
+    .where('user_name', String(user).trim()).first()
 
   if (!id) return res.status(404).json({ error: 'User Not Found' })
 

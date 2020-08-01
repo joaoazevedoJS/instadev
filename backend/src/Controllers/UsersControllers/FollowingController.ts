@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
 class FollowingController {
   async index (req: Request, res: Response) {
@@ -18,6 +18,7 @@ class FollowingController {
       .offset((Number(page) - 1) * 10)
       .select([
         'id',
+        'user_id',
         'following_id'
       ])
 

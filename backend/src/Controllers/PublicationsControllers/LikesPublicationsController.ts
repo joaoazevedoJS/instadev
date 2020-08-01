@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
 // Proximo dia - Criar Banco de dados N-N, fazer indice de quais publicações o usuario curtio, etc
 class LikesPublicationsController {
@@ -44,16 +44,21 @@ class LikesPublicationsController {
 
   async destroy (req: Request, res: Response) {
     const { userId } = req.userSession
-    const { PublicationId } = req.params
+    const { LikeId } = req.params
 
     const data = {
-      user_id: Number(userId),
-      publication_id: Number(PublicationId)
+      id: LikeId,
+      user_id: userId
     }
+
+    const userLiked = await knex('publications_comments')
+      .where(data).first()
+
+    if (!userLiked) return res.status(401).json({ error: 'Only users who liked can dislike' })
 
     try {
       await knex('public_likes')
-        .where(data).first().delete()
+        .where('id', LikeId).first().delete()
 
       return res.send('')
     } catch (e) {

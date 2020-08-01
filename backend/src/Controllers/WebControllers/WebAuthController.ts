@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
-import SendMail from '../utils/SendMail'
-import nowDateUTC from '../utils/NowDateUTC'
+import SendMail from '../../utils/SendMail'
+import nowDateUTC from '../../utils/NowDateUTC'
 
 class WebAuthController {
   authenticated (req: Request, res: Response) {
@@ -60,10 +60,12 @@ class WebAuthController {
           .where('id', userId)
           .update('limit_resend', 0)
       } else {
-        trx.rollback()
+        await trx.rollback()
         return res.status(401).json({ error: 'Limit Resend Mail' })
       }
     }
+
+    await trx.commit()
 
     try {
       await SendMail(
@@ -73,11 +75,13 @@ class WebAuthController {
         { email: user.email, accountCode: user.accountCode }
       )
 
-      await trx('users')
-        .where('id', userId)
-        .update('limit_resend', Number(user.limit_resend) + 1)
+      const limit = await await knex('users')
+        .select('limit_resend')
+        .where('id', userId).first()
 
-      await trx.commit()
+      await knex('users')
+        .where('id', userId)
+        .update('limit_resend', Number(limit.limit_resend) + 1)
 
       res.json({ sucess: 'Email been send' })
     } catch (error) {

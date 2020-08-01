@@ -2,11 +2,11 @@
 import { Request, Response } from 'express'
 import bycript from 'bcryptjs'
 
-import GenerateToken from '../utils/GenerateToken'
-import randomCode from '../utils/randomCode'
-import SendMail from '../utils/SendMail'
+import GenerateToken from '../../utils/GenerateToken'
+import randomCode from '../../utils/randomCode'
+import SendMail from '../../utils/SendMail'
 
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
 class SessionsController {
   async signup (req: Request, res: Response) {

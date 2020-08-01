@@ -12,6 +12,12 @@
       "./node_modules/@types",
       "./src/@types"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@PublicationsControllers/*": ["./src/Controllers/PublicationsControllers/*"],
+      "@UsersControllers/*": ["./src/Controllers/UsersControllers/*"],
+      "@WebControllers/*":  ["./src/Controllers/WebControllers/*"]
+    },
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,

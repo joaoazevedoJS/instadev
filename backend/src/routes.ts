@@ -1,15 +1,18 @@
 import { Router } from 'express'
 
-import SessionsController from './Controllers/SessionsController'
-import UserController from './Controllers/UserController'
-import VerifyAccountController from './Controllers/VerifyAccountController'
-import WebAuthController from './Controllers/WebAuthController'
-import FollowingController from './Controllers/FollowingController'
-import FollowersController from './Controllers/FollowersController'
-import PublicationsController from './Controllers/PublicationsController'
-import LikesPublicationsController from './Controllers/LikesPublicationsController'
-import HomePublicationsController from './Controllers/HomePublicationsController'
-import GlobalPublicationsController from './Controllers/GlobalPublicationsController'
+import SessionsController from '@UsersControllers/SessionsController'
+import UserController from '@UsersControllers/UserController'
+import FollowingController from '@UsersControllers/FollowingController'
+import FollowersController from '@UsersControllers/FollowersController'
+
+import PublicationsController from '@PublicationsControllers/PublicationsController'
+import LikesPublicationsController from '@PublicationsControllers/LikesPublicationsController'
+import HomePublicationsController from '@PublicationsControllers/HomePublicationsController'
+import GlobalPublicationsController from '@PublicationsControllers/GlobalPublicationsController'
+import CommentsPublicationsController from '@PublicationsControllers/CommentsPublicationsController'
+
+import VerifyAccountController from '@WebControllers/VerifyAccountController'
+import WebAuthController from '@WebControllers/WebAuthController'
 
 import Authorization from './auth/middlewares/Authorization'
 import isMailVerified from './middlewares/isMailVerified'
@@ -19,13 +22,16 @@ const routes = Router()
 
 const sessions = new SessionsController()
 const user = new UserController()
-const verify = new VerifyAccountController()
 const following = new FollowingController()
 const followers = new FollowersController()
+
 const publications = new PublicationsController()
 const LikesPublications = new LikesPublicationsController()
 const HomePublications = new HomePublicationsController()
 const GlobalPublications = new GlobalPublicationsController()
+const CommentsPublications = new CommentsPublicationsController()
+
+const verify = new VerifyAccountController()
 const webAuth = new WebAuthController()
 
 routes.get('/verify-email-account', verify.verifyEmail)
@@ -41,6 +47,10 @@ routes.get('/users/following', URLDashboard, following.index)
 routes.get('/users/followers', URLDashboard, followers.index)
 routes.get('/users/publications', URLDashboard, publications.index)
 routes.get('/users/publications/likes/:PublicationId', LikesPublications.index)
+routes.get('/users/publications/comments/:PublicationId', CommentsPublications.index)
+
+// retirar
+routes.get('/users/sql', user.sql)
 
 // user - private
 
@@ -48,20 +58,23 @@ routes.use('/user', Authorization)
 
 routes.get('/user/home/publications', HomePublications.index)
 routes.get('/user/explore/publications', GlobalPublications.index)
-routes.put('/user/update-account', user.update)
 
+routes.put('/user/update-account', user.update)
 routes.put('/user/confirm-account/:code', webAuth.confirmAccount)
 
 // user actions
 
 routes.post('/user/action/following/:followId', isMailVerified, following.store)
-routes.delete('/user/action/unfollowing/:followId', isMailVerified, following.destroy)
+routes.delete('/user/action/following/:followId', isMailVerified, following.destroy)
 
 routes.post('/user/action/publications', isMailVerified, publications.store)
 routes.delete('/user/action/publications/:PublicationId', isMailVerified, publications.destroy)
 
 routes.post('/user/action/like/publication/:PublicationId', isMailVerified, LikesPublications.store)
-routes.delete('/user/action/unlike/publication/:PublicationId', isMailVerified, LikesPublications.destroy)
+routes.delete('/user/action/like/publication/:LikeId', isMailVerified, LikesPublications.destroy)
+
+routes.post('/user/action/comments/:PublicationId', isMailVerified, CommentsPublications.store)
+routes.delete('/user/action/comments/:CommentId', isMailVerified, CommentsPublications.destroy)
 
 routes.put('/user/action/resend-code', webAuth.resendCode)
 

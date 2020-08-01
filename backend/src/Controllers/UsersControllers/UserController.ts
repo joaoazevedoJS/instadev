@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
 class UserController {
   async show (req: Request, res: Response) {
@@ -30,6 +30,12 @@ class UserController {
     })
 
     return res.json(user)
+  }
+
+  async sql (req: Request, res: Response) {
+    const users = await knex('users')
+
+    return res.json(users)
   }
 
   async update (req: Request, res: Response) {

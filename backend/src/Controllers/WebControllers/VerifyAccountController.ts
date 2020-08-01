@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
 class VerifyAccountController {
   async verifyEmail (req: Request, res: Response) {
