@@ -9,11 +9,35 @@ class CommentsPublicationsController {
     const { PublicationId } = req.params
 
     const comments = await knex('publications_comments')
-      .where('publication_id', Number(PublicationId))
+      .join('users', 'users.id', '=', 'publications_comments.user_id')
+      .where('publications_comments.publication_id', Number(PublicationId))
+      .select([
+        'publications_comments.*',
+        'users.user_name'
+      ])
       .limit(10)
       .offset((Number(page) - 1) * 10)
 
-    res.json(comments)
+    const acomment = await Promise.all(comments.map(async comment => {
+      const commentOfComment = await knex('comments_comments')
+        .join('users', 'users.id', '=', 'comments_comments.user_id')
+        .where('comments_comments.comment_id', comment.id)
+        .select([
+          'comments_comments.id',
+          'users.user_name',
+          'users.id as user_id',
+          'comments_comments.message'
+        ])
+
+      const comments = {
+        comment: { ...comment },
+        fromComment: [...commentOfComment]
+      }
+
+      return comments
+    }))
+
+    res.json(acomment)
   }
 
   async store (req: Request, res: Response) {

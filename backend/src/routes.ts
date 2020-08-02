@@ -10,6 +10,7 @@ import LikesPublicationsController from '@PublicationsControllers/LikesPublicati
 import HomePublicationsController from '@PublicationsControllers/HomePublicationsController'
 import GlobalPublicationsController from '@PublicationsControllers/GlobalPublicationsController'
 import CommentsPublicationsController from '@PublicationsControllers/CommentsPublicationsController'
+import CommentsOfCommentsController from '@PublicationsControllers/CommentsOfCommentsController'
 
 import VerifyAccountController from '@WebControllers/VerifyAccountController'
 import WebAuthController from '@WebControllers/WebAuthController'
@@ -30,6 +31,7 @@ const LikesPublications = new LikesPublicationsController()
 const HomePublications = new HomePublicationsController()
 const GlobalPublications = new GlobalPublicationsController()
 const CommentsPublications = new CommentsPublicationsController()
+const CommentsOfComments = new CommentsOfCommentsController()
 
 const verify = new VerifyAccountController()
 const webAuth = new WebAuthController()
@@ -76,7 +78,10 @@ routes.delete('/user/action/like/publication/:LikeId', isMailVerified, LikesPubl
 routes.post('/user/action/comments/:PublicationId', isMailVerified, CommentsPublications.store)
 routes.delete('/user/action/comments/:CommentId', isMailVerified, CommentsPublications.destroy)
 
-routes.put('/user/action/resend-code', webAuth.resendCode)
+routes.post('/user/action/comments-comments/:CommentId', isMailVerified, CommentsOfComments.store)
+routes.delete('/user/action/comments-comments/:CommentFromCommentsId', isMailVerified, CommentsOfComments.destroy)
+
+routes.post('/user/action/resend-code', webAuth.resendCode)
 
 // web action
 
