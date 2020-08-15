@@ -9,11 +9,11 @@ class GlobalPublicationsController {
 
     const publications = await knex('publications')
       .join('users', 'users.id', '=', 'publications.user_id')
-      .leftJoin('public_likes', 'public_likes.publication_id', '=', 'publications.id')
+      .leftJoin('publications_likes', 'publications_likes.publication_id', '=', 'publications.id')
       .groupBy('publications.id')
       .select('publications.*')
       .select('users.user_name')
-      .count('public_likes.publication_id', { as: 'likes' })
+      .count('publications_likes.publication_id', { as: 'likes' })
       .orderBy('likes', 'desc')
       .orderBy('publications.date', 'desc')
       .limit(20)

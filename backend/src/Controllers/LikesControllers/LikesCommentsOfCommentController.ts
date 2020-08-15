@@ -3,38 +3,28 @@ import { Request, Response } from 'express'
 
 import knex from '../../database/connection'
 
-// Proximo dia - Criar Banco de dados N-N, fazer indice de quais publicações o usuario curtio, etc
-class LikesPublicationsController {
-  async index (req: Request, res: Response) {
-    const { PublicationId } = req.params
-
-    const likes = await knex('public_likes')
-      .where('publication_id', PublicationId)
-
-    return res.json(likes)
-  }
-
+class LikesCommentsOfCommentController {
   async store (req: Request, res: Response) {
     const { userId } = req.userSession
-    const { PublicationId } = req.params
+    const { CommentCommentId } = req.params
 
     const data = {
       user_id: Number(userId),
-      publication_id: Number(PublicationId)
+      comments_comment_id: Number(CommentCommentId)
     }
 
-    const AlreadyLiked = await knex('public_likes')
+    const AlreadyLiked = await knex('comments_comment_likes')
       .where(data).first()
 
     if (AlreadyLiked) return res.status(401).json({ error: 'you can\'t liked again' })
 
-    const ExistsPublication = await knex('publications')
-      .where('id', Number(PublicationId)).first()
+    const ExistsComment = await knex('comments_comment')
+      .where('id', Number(CommentCommentId)).first()
 
-    if (!ExistsPublication) return res.status(404).json({ error: 'Publication not Found' })
+    if (!ExistsComment) return res.status(404).json({ error: 'Comment not Found' })
 
     try {
-      const [id] = await knex('public_likes').insert(data)
+      const [id] = await knex('comments_comment_likes').insert(data)
 
       return res.json({ id, ...data })
     } catch (e) {
@@ -51,13 +41,13 @@ class LikesPublicationsController {
       user_id: userId
     }
 
-    const userLiked = await knex('publications_comments')
+    const userLiked = await knex('comments_comment_likes')
       .where(data).first()
 
     if (!userLiked) return res.status(401).json({ error: 'Only users who liked can dislike' })
 
     try {
-      await knex('public_likes')
+      await knex('comments_comment_likes')
         .where('id', LikeId).first().delete()
 
       return res.send('')
@@ -67,4 +57,4 @@ class LikesPublicationsController {
   }
 }
 
-export default LikesPublicationsController
+export default LikesCommentsOfCommentController

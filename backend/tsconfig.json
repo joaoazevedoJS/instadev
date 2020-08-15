@@ -16,7 +16,9 @@
     "paths": {
       "@PublicationsControllers/*": ["./src/Controllers/PublicationsControllers/*"],
       "@UsersControllers/*": ["./src/Controllers/UsersControllers/*"],
-      "@WebControllers/*":  ["./src/Controllers/WebControllers/*"]
+      "@WebControllers/*":  ["./src/Controllers/WebControllers/*"],
+      "@CommentsControllers/*":  ["./src/Controllers/CommentsControllers/*"],
+      "@LikesControllers/*":  ["./src/Controllers/LikesControllers/*"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true,

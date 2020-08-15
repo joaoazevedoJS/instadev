@@ -9,35 +9,41 @@ class CommentsPublicationsController {
     const { PublicationId } = req.params
 
     const comments = await knex('publications_comments')
+      .leftJoin('comments_likes', 'comments_likes.comments_id', '=', 'publications_comments.id')
       .join('users', 'users.id', '=', 'publications_comments.user_id')
       .where('publications_comments.publication_id', Number(PublicationId))
       .select([
         'publications_comments.*',
         'users.user_name'
       ])
+      .groupBy('publications_comments.id')
       .limit(10)
       .offset((Number(page) - 1) * 10)
+      .count('comments_likes.comments_id as likes')
 
-    const acomment = await Promise.all(comments.map(async comment => {
-      const commentOfComment = await knex('comments_comments')
-        .join('users', 'users.id', '=', 'comments_comments.user_id')
-        .where('comments_comments.comment_id', comment.id)
+    const allcomments = await Promise.all(comments.map(async comment => {
+      const commentOfComment = await knex('comments_comment')
+        .leftJoin('comments_comment_likes', 'comments_comment_likes.comments_comment_id', '=', 'comments_comment.id')
+        .join('users', 'users.id', '=', 'comments_comment.user_id')
+        .where('comments_comment.comment_id', comment.id)
         .select([
-          'comments_comments.id',
+          'comments_comment.id',
           'users.user_name',
           'users.id as user_id',
-          'comments_comments.message'
+          'comments_comment.message'
         ])
+        .groupBy('comments_comment.id')
+        .count('comments_comment_likes.comments_comment_id as likes')
 
       const comments = {
         comment: { ...comment },
-        fromComment: [...commentOfComment]
+        comments_of_comment: [...commentOfComment]
       }
 
       return comments
     }))
 
-    res.json(acomment)
+    res.json(allcomments)
   }
 
   async store (req: Request, res: Response) {

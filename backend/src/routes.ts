@@ -6,11 +6,15 @@ import FollowingController from '@UsersControllers/FollowingController'
 import FollowersController from '@UsersControllers/FollowersController'
 
 import PublicationsController from '@PublicationsControllers/PublicationsController'
-import LikesPublicationsController from '@PublicationsControllers/LikesPublicationsController'
 import HomePublicationsController from '@PublicationsControllers/HomePublicationsController'
 import GlobalPublicationsController from '@PublicationsControllers/GlobalPublicationsController'
-import CommentsPublicationsController from '@PublicationsControllers/CommentsPublicationsController'
-import CommentsOfCommentsController from '@PublicationsControllers/CommentsOfCommentsController'
+
+import LikesPublicationsController from '@LikesControllers/LikesPublicationsController'
+import LikesCommentsControllers from '@LikesControllers/LikesCommentsControllers'
+import LikesCommentsOfCommentController from '@LikesControllers/LikesCommentsOfCommentController'
+
+import CommentsPublicationsController from '@CommentsControllers/CommentsPublicationsController'
+import CommentsOfCommentsController from '@CommentsControllers/CommentsOfCommentsController'
 
 import VerifyAccountController from '@WebControllers/VerifyAccountController'
 import WebAuthController from '@WebControllers/WebAuthController'
@@ -27,11 +31,15 @@ const following = new FollowingController()
 const followers = new FollowersController()
 
 const publications = new PublicationsController()
-const LikesPublications = new LikesPublicationsController()
 const HomePublications = new HomePublicationsController()
 const GlobalPublications = new GlobalPublicationsController()
+
 const CommentsPublications = new CommentsPublicationsController()
 const CommentsOfComments = new CommentsOfCommentsController()
+
+const LikesPublications = new LikesPublicationsController()
+const LikesComments = new LikesCommentsControllers()
+const LikesCommentsOfComment = new LikesCommentsOfCommentController()
 
 const verify = new VerifyAccountController()
 const webAuth = new WebAuthController()
@@ -72,14 +80,20 @@ routes.delete('/user/action/following/:followId', isMailVerified, following.dest
 routes.post('/user/action/publications', isMailVerified, publications.store)
 routes.delete('/user/action/publications/:PublicationId', isMailVerified, publications.destroy)
 
-routes.post('/user/action/like/publication/:PublicationId', isMailVerified, LikesPublications.store)
-routes.delete('/user/action/like/publication/:LikeId', isMailVerified, LikesPublications.destroy)
-
 routes.post('/user/action/comments/:PublicationId', isMailVerified, CommentsPublications.store)
 routes.delete('/user/action/comments/:CommentId', isMailVerified, CommentsPublications.destroy)
 
 routes.post('/user/action/comments-comments/:CommentId', isMailVerified, CommentsOfComments.store)
 routes.delete('/user/action/comments-comments/:CommentFromCommentsId', isMailVerified, CommentsOfComments.destroy)
+
+routes.post('/user/action/like/publication/:PublicationId', isMailVerified, LikesPublications.store)
+routes.delete('/user/action/like/publication/:LikeId', isMailVerified, LikesPublications.destroy)
+
+routes.post('/user/action/like/comments/:CommentId', isMailVerified, LikesComments.store)
+routes.delete('/user/action/like/comments/:LikeId', isMailVerified, LikesComments.destroy)
+
+routes.post('/user/action/like/comments-comment/:CommentCommentId', isMailVerified, LikesCommentsOfComment.store)
+routes.delete('/user/action/like/comments-comment/:LikeId', isMailVerified, LikesCommentsOfComment.destroy)
 
 routes.post('/user/action/resend-code', webAuth.resendCode)
 
