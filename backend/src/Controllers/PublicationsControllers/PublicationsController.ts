@@ -1,23 +1,17 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../../database/connection'
 import nowDateUTC from '../../utils/NowDateUTC'
 
-class PublicationsController {
+import PublicationsErrors from '../../errors/PublicationsErrors'
+import PublicationsModel from '../../model/PublicationsModel'
+
+class PublicationsController extends PublicationsModel {
   async index (req: Request, res: Response) {
     const { id } = req.params
     const { page } = req.query
 
-    const publications = await knex('publications')
-      .leftJoin('publications_likes', 'publications_likes.publication_id', '=', 'publications.id')
-      .where('publications.user_id', Number(id))
-      .select('publications.*')
-      .groupBy('publications.id')
-      .orderBy('publications.date', 'desc')
-      .count('publications_likes.publication_id as likes')
-      .limit(20)
-      .offset((Number(page) - 1) * 20)
+    const publications = await super.ReadUserPublication(Number(id), Number(page))
 
     return res.json(publications)
   }
@@ -35,9 +29,15 @@ class PublicationsController {
       user_id: userId
     }
 
-    const [id] = await knex('publications').insert(data)
+    try {
+      const [id] = await super.CreateUserPublication(data)
 
-    return res.json({ id, ...data })
+      return res.status(201).json({ id, ...data })
+    } catch (e) {
+      const { errorInCreatePublication } = new PublicationsErrors()
+
+      return res.status(errorInCreatePublication.status).json(errorInCreatePublication)
+    }
   }
 
   async destroy (req: Request, res: Response) {
@@ -45,22 +45,22 @@ class PublicationsController {
     const { PublicationId } = req.params
 
     const data = {
-      id: PublicationId,
-      user_id: userId
+      id: Number(PublicationId),
+      user_id: Number(userId)
     }
 
-    const userPublications = await knex('publications')
-      .where(data).first()
-
-    if (!userPublications) return res.status(401).json({ error: 'Only the user who created the publications can delete them' })
-
     try {
-      await knex('publications')
-        .where(data).first().delete()
+      const unexpectedError: any = await super.DeleteUserPublication(data)
+
+      if (unexpectedError.status) {
+        return res.status(unexpectedError.status).json(unexpectedError)
+      }
 
       return res.send('')
     } catch (e) {
-      return res.status(500).json({ error: 'Error, Try again' })
+      const { errorInDeletePublication } = new PublicationsErrors()
+
+      return res.status(errorInDeletePublication.status).json(errorInDeletePublication)
     }
   }
 }

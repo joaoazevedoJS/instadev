@@ -6,8 +6,7 @@ import FollowingController from '@UsersControllers/FollowingController'
 import FollowersController from '@UsersControllers/FollowersController'
 
 import PublicationsController from '@PublicationsControllers/PublicationsController'
-import HomePublicationsController from '@PublicationsControllers/HomePublicationsController'
-import GlobalPublicationsController from '@PublicationsControllers/GlobalPublicationsController'
+import SearchPublicationsController from '@PublicationsControllers/SearchPublicationsController'
 
 import LikesPublicationsController from '@LikesControllers/LikesPublicationsController'
 import LikesCommentsControllers from '@LikesControllers/LikesCommentsControllers'
@@ -31,8 +30,7 @@ const following = new FollowingController()
 const followers = new FollowersController()
 
 const publications = new PublicationsController()
-const HomePublications = new HomePublicationsController()
-const GlobalPublications = new GlobalPublicationsController()
+const searchPublications = new SearchPublicationsController()
 
 const CommentsPublications = new CommentsPublicationsController()
 const CommentsOfComments = new CommentsOfCommentsController()
@@ -66,8 +64,7 @@ routes.get('/users/sql', user.sql)
 
 routes.use('/user', Authorization)
 
-routes.get('/user/home/publications', HomePublications.index)
-routes.get('/user/explore/publications', GlobalPublications.index)
+routes.get('/user/explore/publications', searchPublications.index)
 
 routes.put('/user/update-account', user.update)
 routes.put('/user/confirm-account/:code', webAuth.confirmAccount)
