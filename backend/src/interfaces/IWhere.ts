@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-export interface IWhere {
+export interface IWhereUserDelete {
   id: number,
   user_id: number
 }

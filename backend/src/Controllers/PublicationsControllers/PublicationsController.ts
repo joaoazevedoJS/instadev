@@ -4,7 +4,7 @@ import { Request, Response } from 'express'
 import nowDateUTC from '../../utils/NowDateUTC'
 
 import PublicationsErrors from '../../errors/PublicationsErrors'
-import PublicationsModel from '../../model/PublicationsModel'
+import PublicationsModel from '../../model/PublicationsModel/PublicationsModel'
 
 class PublicationsController extends PublicationsModel {
   async index (req: Request, res: Response) {
@@ -62,6 +62,12 @@ class PublicationsController extends PublicationsModel {
 
       return res.status(errorInDeletePublication.status).json(errorInDeletePublication)
     }
+  }
+
+  async update (req: Request, res: Response) {
+    const { userId } = req.userSession
+
+    return res.json({ message: 'Hello World!', userId })
   }
 }
 

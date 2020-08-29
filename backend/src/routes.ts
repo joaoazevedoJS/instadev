@@ -13,7 +13,7 @@ import LikesCommentsControllers from '@LikesControllers/LikesCommentsControllers
 import LikesCommentsOfCommentController from '@LikesControllers/LikesCommentsOfCommentController'
 
 import CommentsPublicationsController from '@CommentsControllers/CommentsPublicationsController'
-import CommentsOfCommentsController from '@CommentsControllers/CommentsOfCommentsController'
+import CommentsOfCommentaryController from '@CommentsControllers/CommentsOfCommentaryController'
 
 import VerifyAccountController from '@WebControllers/VerifyAccountController'
 import WebAuthController from '@WebControllers/WebAuthController'
@@ -33,17 +33,17 @@ const publications = new PublicationsController()
 const searchPublications = new SearchPublicationsController()
 
 const CommentsPublications = new CommentsPublicationsController()
-const CommentsOfComments = new CommentsOfCommentsController()
+const CommentsOfCommentary = new CommentsOfCommentaryController()
 
 const LikesPublications = new LikesPublicationsController()
 const LikesComments = new LikesCommentsControllers()
 const LikesCommentsOfComment = new LikesCommentsOfCommentController()
 
-const verify = new VerifyAccountController()
+const verifyAccount = new VerifyAccountController()
 const webAuth = new WebAuthController()
 
-routes.get('/verify-email-account', verify.verifyEmail)
-routes.get('/verify-username-account', verify.verifyUserName)
+routes.get('/verify-email-account', verifyAccount.verifyEmail)
+routes.get('/verify-username-account', verifyAccount.verifyUserName)
 
 routes.post('/signup', sessions.signup)
 routes.post('/signin', sessions.signin)
@@ -80,8 +80,8 @@ routes.delete('/user/action/publications/:PublicationId', isMailVerified, public
 routes.post('/user/action/comments/:PublicationId', isMailVerified, CommentsPublications.store)
 routes.delete('/user/action/comments/:CommentId', isMailVerified, CommentsPublications.destroy)
 
-routes.post('/user/action/comments-comments/:CommentId', isMailVerified, CommentsOfComments.store)
-routes.delete('/user/action/comments-comments/:CommentFromCommentsId', isMailVerified, CommentsOfComments.destroy)
+routes.post('/user/action/comments-comments/:CommentId', isMailVerified, CommentsOfCommentary.store)
+routes.delete('/user/action/comments-comments/:CommentFromCommentsId', isMailVerified, CommentsOfCommentary.destroy)
 
 routes.post('/user/action/like/publication/:PublicationId', isMailVerified, LikesPublications.store)
 routes.delete('/user/action/like/publication/:LikeId', isMailVerified, LikesPublications.destroy)

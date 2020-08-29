@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import SearchPublicationsModel from '../../model/SearchPublicationsModel'
+import SearchPublicationsModel from '../../model/PublicationsModel/SearchPublicationsModel'
 
 class SearchPublicationsControllers extends SearchPublicationsModel {
   async index (req: Request, res: Response) {

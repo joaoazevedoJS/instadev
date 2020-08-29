@@ -1,8 +1,10 @@
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
-import { IWhere } from '../interfaces/IPublications'
-import PublicationsErrors from '../errors/PublicationsErrors'
-import SimpleCRUD from './SimpleCRUD'
+import SimpleCRUD from '../SimpleCRUD'
+import PublicationsErrors from '../../errors/PublicationsErrors'
+
+// eslint-disable-next-line no-unused-vars
+import { IWhereUserDelete } from '../../interfaces/IWhere'
 
 class PublicationsModel extends SimpleCRUD {
   public async CreateUserPublication (data: any) {
@@ -25,12 +27,12 @@ class PublicationsModel extends SimpleCRUD {
     return publications
   }
 
-  public async DeleteUserPublication (where: IWhere) {
+  public async DeleteUserPublication (where: IWhereUserDelete) {
     const searchPublication = await super.Read('publications', where, true)
 
-    const { errorInSearchPublication } = new PublicationsErrors()
+    const { errorPublicationNotFound } = new PublicationsErrors()
 
-    if (!searchPublication) return errorInSearchPublication
+    if (!searchPublication) return errorPublicationNotFound
 
     await super.Delete('publications', where)
 

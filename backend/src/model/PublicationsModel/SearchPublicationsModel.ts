@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import knex from '../database/connection'
+import knex from '../../database/connection'
 
 class SearchPublications {
   public async GlobalPublications (page: number) {

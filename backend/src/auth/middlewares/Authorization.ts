@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken'
 import knex from '../../database/connection'
 import { hash } from '../configs/hash.json'
 
+import AuthorizationError from 'src/errors/AuthorizationError'
+
 interface Decoded {
   id: number,
   iat: number,
@@ -14,7 +16,9 @@ interface Decoded {
 function Authorization (req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization
 
-  if (!auth) return res.status(401).json({ error: 'No Token Provided' })
+  const { errorNoTokenProvided } = new AuthorizationError()
+
+  if (!auth) return res.status(errorNoTokenProvided.status).json(errorNoTokenProvided)
 
   const parts = auth.split(' ')
 
