@@ -2,10 +2,12 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 
-import knex from '../../database/connection'
+import SimpleCRUD from '../../model/SimpleCRUD'
+
 import { hash } from '../configs/hash.json'
 
-import AuthorizationError from 'src/errors/AuthorizationError'
+import AuthorizationError from '../../errors/AuthorizationError'
+import UserError from '../../errors/UserError'
 
 interface Decoded {
   id: number,
@@ -16,26 +18,27 @@ interface Decoded {
 function Authorization (req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization
 
-  const { errorNoTokenProvided } = new AuthorizationError()
+  const { errorNoTokenProvided, errorTokenMalformed, errorTokenInvalid } = new AuthorizationError()
 
   if (!auth) return res.status(errorNoTokenProvided.status).json(errorNoTokenProvided)
 
-  const parts = auth.split(' ')
+  const [schema, token] = auth.split(' ')
 
-  if (parts.length !== 2) return res.status(401).json({ error: 'Token Error' })
-
-  const [schema, token] = parts
-
-  if (!/^Bearer$/i.test(schema)) return res.status(401).json({ error: 'Token Malformed' })
+  if (!/^Bearer$/i.test(schema) || !token) {
+    return res.status(errorTokenMalformed.status).json(errorTokenMalformed)
+  }
 
   jwt.verify(token, hash, async (err, decoded: Decoded) => {
-    if (err) return res.status(401).json({ error: 'Invalid Token' })
+    if (err) return res.status(errorTokenInvalid.status).json(errorTokenInvalid)
 
     const userId = decoded.id
 
-    const user = await knex('users').where('id', userId).first()
+    const { Read } = new SimpleCRUD()
+    const { errorUserNotFound } = new UserError()
 
-    if (!user) return res.status(404).json({ error: 'User not Found' })
+    const user = await Read('users', { id: userId }, true)
+
+    if (!user) return res.status(errorUserNotFound.status).json(errorUserNotFound)
 
     req.userSession = { userId }
 

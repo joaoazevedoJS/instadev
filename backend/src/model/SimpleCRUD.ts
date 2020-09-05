@@ -23,6 +23,10 @@ class SimpleCRUD {
     return response
   }
 
+  protected async Update (table: string, data: any, where: any) {
+    await knex(table).update(data).where(where)
+  }
+
   protected async Delete (table: string, where: any) {
     await knex(table).where(where).first().delete()
   }

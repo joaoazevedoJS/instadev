@@ -57,9 +57,6 @@ routes.get('/users/publications', URLDashboard, publications.index)
 routes.get('/users/publications/likes/:PublicationId', LikesPublications.index)
 routes.get('/users/publications/comments/:PublicationId', CommentsPublications.index)
 
-// retirar
-routes.get('/users/sql', user.sql)
-
 // user - private
 
 routes.use('/user', Authorization)

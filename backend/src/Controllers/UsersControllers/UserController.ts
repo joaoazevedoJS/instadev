@@ -1,55 +1,46 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 import { Request, Response } from 'express'
 
-import knex from '../../database/connection'
+import UserModel from '../../model/UsersModel/UserModel'
+import { IUserUpdate } from '../../interfaces/IUser'
+import UserError from '../../errors/UserError'
 
-class UserController {
+class UserController extends UserModel {
   async show (req: Request, res: Response) {
     // it get id in URLDashboard.ts
     const { id } = req.params
 
-    const [following] = await knex('following')
-      .where('user_id', id).count()
+    const following = await super.ReadUserCount('following', { user_id: Number(id) })
+    const followers = await super.ReadUserCount('following', { following_id: Number(id) })
+    const publications = await super.ReadUserCount('publications', { user_id: Number(id) })
 
-    const [followers] = await knex('following')
-      .where('following_id', id).count()
-
-    const [publications] = await knex('publications')
-      .where('user_id', id).count()
-
-    const user = await knex('users')
-      .select('name')
-      .select('user_name')
-      .select('privateAccount')
-      .where('id', id).first()
+    const user = await super.ReadUser(Number(id))
 
     res.header({
-      'X-Total-Following': following['count(*)'],
-      'X-Total-Followers': followers['count(*)'],
-      'X-Total-Publications': publications['count(*)']
+      'X-Total-Following': following,
+      'X-Total-Followers': followers,
+      'X-Total-Publications': publications
     })
 
     return res.json(user)
-  }
-
-  async sql (req: Request, res: Response) {
-    const users = await knex('users')
-
-    return res.json(users)
   }
 
   async update (req: Request, res: Response) {
     const { userId } = req.userSession
     const { privateAccount } = req.body
 
+    const data: IUserUpdate = {
+      privateAccount: Boolean(privateAccount)
+    }
+
     try {
-      await knex('users')
-        .where('id', userId)
-        .update('privateAccount', Boolean(privateAccount))
+      await super.UpdateUser(data, { id: Number(userId) })
 
       return res.send()
     } catch (e) {
-      return res.status(500).json({ error: 'Error, try again!' })
+      const { errorUserUpdate } = new UserError()
+
+      return res.status(errorUserUpdate.status).json(errorUserUpdate)
     }
   }
 }
