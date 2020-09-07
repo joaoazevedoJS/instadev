@@ -1,16 +1,18 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response, NextFunction } from 'express'
 
-import knex from '../database/connection'
+import UserError from '../errors/UserError'
+import SimpleCRUD from '../model/SimpleCRUD'
 
 async function isMailVerified (req: Request, res: Response, next: NextFunction) {
   const { userId } = req.userSession
 
-  const { confirmAccount } = await knex('users')
-    .select('confirmAccount')
-    .where('id', userId).first()
+  const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
+  const { errorMailNotVerified } = new UserError()
 
-  if (!!confirmAccount === false) return res.status(401).json({ error: 'Email not Verified' })
+  const { confirmAccount } = await ReadReturnSelectWithWhereFirst('users', { confirmAccount: 'confirmAccount' }, { id: userId })
+
+  if (!!confirmAccount === false) return res.status(errorMailNotVerified.status).json(errorMailNotVerified)
 
   next()
 }

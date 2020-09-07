@@ -1,18 +1,17 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../../database/connection'
+import SimpleCRUD from '../../model/SimpleCRUD'
 
 class VerifyAccountController {
   async verifyEmail (req: Request, res: Response) {
     const { email } = req.body
 
-    const mailExists = await knex('users')
-      .select('email')
-      .where('email', String(email)).first()
+    const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
 
-    mailExists ? res.json({ exists: true })
-      : res.json({ exists: false })
+    const mailExists = await ReadReturnSelectWithWhereFirst('users', { email: 'email' }, { email })
+
+    return res.json({ exists: !!mailExists })
   }
 
   async verifyUserName (req: Request, res: Response) {
@@ -23,12 +22,11 @@ class VerifyAccountController {
 
     if (parts.length !== 1) return res.json({ error: 'User name Malformed' })
 
-    const userNameExists = await knex('users')
-      .select('user_name')
-      .where('user_name', String(user_name)).first()
+    const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
 
-    userNameExists ? res.json({ exists: true })
-      : res.json({ exists: false })
+    const userNameExists = await ReadReturnSelectWithWhereFirst('users', { user_name: 'user_name' }, { user_name })
+
+    return res.json({ exists: !!userNameExists })
   }
 }
 

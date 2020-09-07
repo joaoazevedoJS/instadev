@@ -33,10 +33,10 @@ function Authorization (req: Request, res: Response, next: NextFunction) {
 
     const userId = decoded.id
 
-    const { Read } = new SimpleCRUD()
+    const { ReadWithWhereFirst } = new SimpleCRUD()
     const { errorUserNotFound } = new UserError()
 
-    const user = await Read('users', { id: userId }, true)
+    const user = await ReadWithWhereFirst('users', { id: userId })
 
     if (!user) return res.status(errorUserNotFound.status).json(errorUserNotFound)
 

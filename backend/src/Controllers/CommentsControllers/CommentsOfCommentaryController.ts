@@ -10,7 +10,7 @@ class CommentsOfCommentaryController extends CommentsOfCommentaryModel {
     const { message } = req.body
     const { CommentId } = req.params
 
-    const ExistsComment = await super.Read('publications_comments', { id: Number(CommentId) }, true)
+    const ExistsComment = await super.ReadWithWhereFirst('publications_comments', { id: Number(CommentId) })
 
     const { errorCommentaryNotFound, errorInDeleteCommentary } = new CommentsErrors()
 

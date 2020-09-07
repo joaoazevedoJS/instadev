@@ -28,7 +28,7 @@ class PublicationsModel extends SimpleCRUD {
   }
 
   public async DeleteUserPublication (where: IWhereUserDelete) {
-    const searchPublication = await super.Read('publications', where, true)
+    const searchPublication = await super.ReadWithWhereFirst('publications', where)
 
     const { errorPublicationNotFound } = new PublicationsErrors()
 

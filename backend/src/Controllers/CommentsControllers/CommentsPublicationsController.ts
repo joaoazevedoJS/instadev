@@ -23,7 +23,7 @@ class CommentsPublicationsController extends CommentsModel {
 
     if (String(message).trim() === '') return res.status(errorMessageNoContent.status).json(errorMessageNoContent)
 
-    const ExistsPublication = await super.Read('publications', { id: Number(PublicationId) }, true)
+    const ExistsPublication = await super.ReadWithWhereFirst('publications', { id: Number(PublicationId) })
 
     if (!ExistsPublication) return res.status(errorPublicationNotFound.status).json(errorPublicationNotFound)
 

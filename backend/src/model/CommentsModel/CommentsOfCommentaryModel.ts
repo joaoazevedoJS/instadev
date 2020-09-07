@@ -13,7 +13,7 @@ class CommentsOfCommentaryModel extends SimpleCRUD {
   }
 
   public async DeleteCommentary (where: IWhereUserDelete) {
-    const searchCommentary = await super.Read('comments_comment', where, true)
+    const searchCommentary = await super.ReadWithWhereFirst('comments_comment', where)
 
     const { errorCommentaryNotFound } = new CommentsErros()
 

@@ -6,20 +6,20 @@ import SimpleCRUD from '../SimpleCRUD'
 import { IUserUpdate, IUserUpdateWhere } from '../../interfaces/IUser'
 
 class UserModel extends SimpleCRUD {
-  public async ReadUserCount (table: string, where: any) {
+  public async ReadUserCount (table: string, where: object) {
     const count = await knex(table).where(where).count().first()
 
     return count['count(*)']
   }
 
   public async ReadUser (id: number) {
-    const user = await knex('users').select({
+    const select = {
       name: 'name',
       user_name: 'user_name',
       privateAccount: 'privateAccount'
-    }).where('id', id).first()
+    }
 
-    return user
+    return await super.ReadReturnSelectWithWhereFirst('users', select, { id })
   }
 
   public async DeleteUser () {

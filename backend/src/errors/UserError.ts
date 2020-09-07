@@ -11,6 +11,11 @@ class UserError {
     status: 400,
     message: 'Unexpected error while user update'
   }
+
+  public errorMailNotVerified: IErrors = {
+    status: 401,
+    message: 'E-mail not Verified'
+  }
 }
 
 export default UserError
