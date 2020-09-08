@@ -1,20 +1,18 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response, NextFunction } from 'express'
 
-import knex from '../database/connection'
-
+import SimpleCRUD from '../model/SimpleCRUD'
 import UserError from '../errors/UserError'
 
 async function URLDashboard (req: Request, res: Response, next: NextFunction) {
   const { user } = req.query
 
   const { errorUserNotFound } = new UserError()
+  const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
 
   if (!user) return res.status(errorUserNotFound.status).json(errorUserNotFound)
 
-  const id = await knex('users')
-    .select('id')
-    .where('user_name', String(user).trim()).first()
+  const id = await ReadReturnSelectWithWhereFirst('users', { id: 'id' }, { user_name: String(user).trim() })
 
   if (!id) return res.status(errorUserNotFound.status).json(errorUserNotFound)
 

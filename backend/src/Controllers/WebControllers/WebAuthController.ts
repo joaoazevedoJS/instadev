@@ -2,9 +2,12 @@
 import { Request, Response } from 'express'
 
 import knex from '../../database/connection'
+import ConfirmAccountModel from '../../model/UsersModel/ConfirmAccountModel'
+import ResendCodeModel from '../../model/UsersModel/ResendCodeModel'
+
+import UserError from '../../errors/UserError'
 
 import SendMail from '../../utils/SendMail'
-import nowDateUTC from '../../utils/NowDateUTC'
 
 class WebAuthController {
   authenticated (req: Request, res: Response) {
@@ -16,56 +19,48 @@ class WebAuthController {
     const { userId } = req.userSession
     const { code } = req.params
 
-    const account = await knex('users')
-      .select('accountCode')
-      .select('confirmAccount')
-      .where('id', userId).first()
+    const { GetAccount, UpdateAccount } = new ConfirmAccountModel()
+    const { errorCodeNotExists, errorMailAlreadyVerified, errorUserUpdate } = new UserError()
 
-    if (code !== account.accountCode) return res.status(401).json({ error: 'Code Not Exists' })
+    const account = await GetAccount(userId)
 
-    if (account.confirmAccount) return res.status(409).json({ error: 'Email has already been verified' })
+    if (code !== account.code) return res.status(errorCodeNotExists.status).json(errorCodeNotExists)
 
-    await knex('users')
-      .where('id', userId)
-      .update('confirmAccount', true)
+    if (account.confirm_account) return res.status(errorMailAlreadyVerified.status).json(errorMailAlreadyVerified)
 
-    return res.send('')
+    try {
+      await UpdateAccount(userId)
+
+      return res.send('')
+    } catch (e) {
+      return res.status(errorUserUpdate.status).json(errorUserUpdate)
+    }
   }
 
   async resendCode (req: Request, res: Response) {
     const { userId } = req.userSession
 
-    const user = await knex('users')
-      .where('id', userId).first()
+    const { GetAccount, Update_LimiteResend, Update_LimiteData } = new ResendCodeModel()
+    const { errorMailAlreadyVerified } = new UserError()
 
-    const date = new Date()
+    const user = await GetAccount(userId)
 
-    user.password = undefined
+    if (user.confirmAccount) return res.status(errorMailAlreadyVerified.status).json(errorMailAlreadyVerified)
 
-    if (user.confirmAccount) return res.status(409).json({ error: 'Email has already been verified' })
+    if (user.limit_date_resend) {
+      const dateParse = new Date(Date.parse(user.limit_date_resend))
+      const date = new Date()
 
-    const trx = await knex.transaction()
-
-    if (user.limit_resend === 3) {
-      const dateUTC = nowDateUTC(3)
-
-      await trx('users')
-        .where('id', userId)
-        .update('limit_date_resend', dateUTC)
-    }
-
-    if (user.limit_resend > 3) {
-      if (new Date(Date.parse(user.limit_date_resend)) < date) {
-        await trx('users')
-          .where('id', userId)
-          .update('limit_resend', 0)
+      if (dateParse < date) {
+        await Update_LimiteResend(userId)
       } else {
-        await trx.rollback()
         return res.status(401).json({ error: 'Limit Resend Mail' })
       }
     }
 
-    await trx.commit()
+    if (user.limit_resend === 3) {
+      await Update_LimiteData(userId)
+    }
 
     try {
       await SendMail(
@@ -75,7 +70,7 @@ class WebAuthController {
         { email: user.email, accountCode: user.accountCode }
       )
 
-      const limit = await await knex('users')
+      const limit = await knex('users')
         .select('limit_resend')
         .where('id', userId).first()
 
