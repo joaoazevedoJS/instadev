@@ -4,7 +4,7 @@ import SimpleCRUD from '../SimpleCRUD'
 import PublicationsErrors from '../../errors/PublicationsErrors'
 
 // eslint-disable-next-line no-unused-vars
-import { IWhereUserDelete } from '../../interfaces/IWhere'
+import { IWhereUserDelete } from '../../interfaces/IUser'
 
 class PublicationsModel extends SimpleCRUD {
   public async CreateUserPublication (data: any) {

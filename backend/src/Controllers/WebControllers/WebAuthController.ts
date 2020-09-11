@@ -1,11 +1,11 @@
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../../database/connection'
 import ConfirmAccountModel from '../../model/UsersModel/ConfirmAccountModel'
 import ResendCodeModel from '../../model/UsersModel/ResendCodeModel'
 
 import UserError from '../../errors/UserError'
+import MailError from '../../errors/MailError'
 
 import SendMail from '../../utils/SendMail'
 
@@ -20,7 +20,9 @@ class WebAuthController {
     const { code } = req.params
 
     const { GetAccount, UpdateAccount } = new ConfirmAccountModel()
-    const { errorCodeNotExists, errorMailAlreadyVerified, errorUserUpdate } = new UserError()
+
+    const { errorCodeNotExists, errorUserUpdate } = new UserError()
+    const { errorMailAlreadyVerified } = new MailError()
 
     const account = await GetAccount(userId)
 
@@ -40,8 +42,8 @@ class WebAuthController {
   async resendCode (req: Request, res: Response) {
     const { userId } = req.userSession
 
-    const { GetAccount, Update_LimiteResend, Update_LimiteData } = new ResendCodeModel()
-    const { errorMailAlreadyVerified } = new UserError()
+    const { GetAccount, UpdateLimiteResend, UpdateLimiteData, GetLimit } = new ResendCodeModel()
+    const { errorMailAlreadyVerified, errorLimitResend, errorWhileSendMail } = new MailError()
 
     const user = await GetAccount(userId)
 
@@ -52,14 +54,14 @@ class WebAuthController {
       const date = new Date()
 
       if (dateParse < date) {
-        await Update_LimiteResend(userId)
+        await UpdateLimiteResend(userId, 0)
       } else {
-        return res.status(401).json({ error: 'Limit Resend Mail' })
+        return res.status(errorLimitResend.status).json(errorLimitResend)
       }
     }
 
     if (user.limit_resend === 3) {
-      await Update_LimiteData(userId)
+      await UpdateLimiteData(userId)
     }
 
     try {
@@ -70,19 +72,15 @@ class WebAuthController {
         { email: user.email, accountCode: user.accountCode }
       )
 
-      const limit = await knex('users')
-        .select('limit_resend')
-        .where('id', userId).first()
+      const { limit_resend } = await GetLimit(userId)
 
-      await knex('users')
-        .where('id', userId)
-        .update('limit_resend', Number(limit.limit_resend) + 1)
+      await UpdateLimiteResend(userId, limit_resend + 1)
 
-      res.json({ sucess: 'Email been send' })
+      return res.json({ sucess: 'Email been send' })
     } catch (error) {
-      res.status(500).json({ error: 'Error, try again' })
+      return res.status(errorWhileSendMail.status).json(errorWhileSendMail)
     }
   }
 }
 
-export default WebAuthController
+export default new WebAuthController()

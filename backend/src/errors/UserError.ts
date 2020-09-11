@@ -12,19 +12,14 @@ class UserError {
     message: 'Unexpected error while user update'
   }
 
-  public errorMailNotVerified: IErrors = {
-    status: 401,
-    message: 'E-mail not Verified'
-  }
-
-  public errorMailAlreadyVerified: IErrors = {
-    status: 409,
-    message: 'Email has already been verified'
-  }
-
   public errorCodeNotExists: IErrors = {
     status: 404,
     message: 'Code Not Exists! Verifed your code account!'
+  }
+
+  public errorUserNameMalformed: IErrors = {
+    status: 400,
+    message: 'User_name Malformed'
   }
 }
 

@@ -2,6 +2,7 @@
 import { Request, Response } from 'express'
 
 import SimpleCRUD from '../../model/SimpleCRUD'
+import UserError from '../../errors/UserError'
 
 class VerifyAccountController {
   async verifyEmail (req: Request, res: Response) {
@@ -20,7 +21,9 @@ class VerifyAccountController {
 
     const parts = String(user_name).split(' ')
 
-    if (parts.length !== 1) return res.json({ error: 'User name Malformed' })
+    const { errorUserNameMalformed } = new UserError()
+
+    if (parts.length !== 1) return res.status(errorUserNameMalformed.status).json(errorUserNameMalformed)
 
     const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
 
@@ -30,4 +33,4 @@ class VerifyAccountController {
   }
 }
 
-export default VerifyAccountController
+export default new VerifyAccountController()

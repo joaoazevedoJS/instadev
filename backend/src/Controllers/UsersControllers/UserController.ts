@@ -5,16 +5,18 @@ import UserModel from '../../model/UsersModel/UserModel'
 import { IUserUpdate } from '../../interfaces/IUser'
 import UserError from '../../errors/UserError'
 
-class UserController extends UserModel {
+class UserController {
   async show (req: Request, res: Response) {
     // it get id in URLDashboard.ts
     const { id } = req.params
 
-    const following = await super.ReadUserCount('following', { user_id: Number(id) })
-    const followers = await super.ReadUserCount('following', { following_id: Number(id) })
-    const publications = await super.ReadUserCount('publications', { user_id: Number(id) })
+    const { ReadUserCount, ReadUser } = new UserModel()
 
-    const user = await super.ReadUser(Number(id))
+    const following = await ReadUserCount('following', { user_id: Number(id) })
+    const followers = await ReadUserCount('following', { following_id: Number(id) })
+    const publications = await ReadUserCount('publications', { user_id: Number(id) })
+
+    const user = await ReadUser(Number(id))
 
     res.header({
       'X-Total-Following': following,
@@ -33,8 +35,10 @@ class UserController extends UserModel {
       privateAccount: Boolean(privateAccount)
     }
 
+    const { UpdateUser } = new UserModel()
+
     try {
-      await super.UpdateUser(data, { id: Number(userId) })
+      await UpdateUser(data, { id: Number(userId) })
 
       return res.send()
     } catch (e) {
@@ -45,4 +49,4 @@ class UserController extends UserModel {
   }
 }
 
-export default UserController
+export default new UserController()

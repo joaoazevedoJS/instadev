@@ -1,11 +1,9 @@
 import jwt from 'jsonwebtoken'
 
-import { hash } from '../auth/configs/hash.json'
+import { hash, options } from '../auth/configs/tokenConfig.json'
 
 function GenerateToken (id: number) {
-  const token = jwt.sign({ id }, hash, {
-    expiresIn: 86400
-  })
+  const token = jwt.sign({ id }, hash, options)
 
   return token
 }

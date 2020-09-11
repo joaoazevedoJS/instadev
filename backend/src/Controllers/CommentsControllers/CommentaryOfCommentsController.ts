@@ -4,13 +4,15 @@ import { Request, Response } from 'express'
 import CommentsErrors from '../../errors/CommentsErrors'
 import CommentsOfCommentaryModel from '../../model/CommentsModel/CommentsOfCommentaryModel'
 
-class CommentsOfCommentaryController extends CommentsOfCommentaryModel {
+class CommentaryOfCommentsController {
   async store (req: Request, res: Response) {
     const { userId } = req.userSession
     const { message } = req.body
     const { CommentId } = req.params
 
-    const ExistsComment = await super.ReadWithWhereFirst('publications_comments', { id: Number(CommentId) })
+    const { ReadWithWhereFirst, CreateCommentary } = new CommentsOfCommentaryModel()
+
+    const ExistsComment = await ReadWithWhereFirst('publications_comments', { id: Number(CommentId) })
 
     const { errorCommentaryNotFound, errorInDeleteCommentary } = new CommentsErrors()
 
@@ -23,7 +25,7 @@ class CommentsOfCommentaryController extends CommentsOfCommentaryModel {
     }
 
     try {
-      const comments = await super.CreateCommentary(data)
+      const comments = await CreateCommentary(data)
 
       return res.json(comments)
     } catch (e) {
@@ -35,13 +37,15 @@ class CommentsOfCommentaryController extends CommentsOfCommentaryModel {
     const { userId } = req.userSession
     const { CommentFromCommentsId } = req.params
 
+    const { DeleteCommentary } = new CommentsOfCommentaryModel()
+
     const where = {
       id: Number(CommentFromCommentsId),
       user_id: Number(userId)
     }
 
     try {
-      const deleteCommentary: any = await super.DeleteCommentary(where)
+      const deleteCommentary: any = await DeleteCommentary(where)
 
       if (deleteCommentary.status) return res.status(deleteCommentary.status).json(deleteCommentary)
 
@@ -54,4 +58,4 @@ class CommentsOfCommentaryController extends CommentsOfCommentaryModel {
   }
 }
 
-export default CommentsOfCommentaryController
+export default new CommentaryOfCommentsController()

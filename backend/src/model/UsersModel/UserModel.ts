@@ -3,7 +3,7 @@ import knex from '../../database/connection'
 import SimpleCRUD from '../SimpleCRUD'
 
 // eslint-disable-next-line no-unused-vars
-import { IUserUpdate, IUserUpdateWhere } from '../../interfaces/IUser'
+import { IUserUpdate, IUserUpdateWhere, IUserSelectUserDashBoard, IUserReturnUserDashBoard } from '../../interfaces/IUser'
 
 class UserModel extends SimpleCRUD {
   public async ReadUserCount (table: string, where: object) {
@@ -13,13 +13,15 @@ class UserModel extends SimpleCRUD {
   }
 
   public async ReadUser (id: number) {
-    const select = {
+    const select: IUserSelectUserDashBoard = {
       name: 'name',
       user_name: 'user_name',
       privateAccount: 'privateAccount'
     }
 
-    return await super.ReadReturnSelectWithWhereFirst('users', select, { id })
+    const user: IUserReturnUserDashBoard = await super.ReadReturnSelectWithWhereFirst('users', select, { id })
+
+    return user
   }
 
   public async DeleteUser () {

@@ -3,21 +3,19 @@ import { Request, Response } from 'express'
 
 import SearchPublicationsModel from '../../model/PublicationsModel/SearchPublicationsModel'
 
-class SearchPublicationsControllers extends SearchPublicationsModel {
-  async index (req: Request, res: Response) {
+class SearchPublicationsControllers {
+  public async index (req: Request, res: Response) {
     const { userId } = req.userSession
     const { page, typePublication } = req.query
 
-    let publications: any
+    const { HomePublications, GlobalPublications } = new SearchPublicationsModel()
 
-    if (typePublication === 'Home') {
-      publications = await super.HomePublications(Number(userId), Number(page))
-    } else {
-      publications = await super.GlobalPublications(Number(page))
-    }
+    const publications = typePublication === 'Home'
+      ? await HomePublications(userId, Number(page))
+      : await GlobalPublications(Number(page))
 
     return res.json(publications)
   }
 }
 
-export default SearchPublicationsControllers
+export default new SearchPublicationsControllers()

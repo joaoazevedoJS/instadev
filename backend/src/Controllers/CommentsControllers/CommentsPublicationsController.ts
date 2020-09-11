@@ -4,12 +4,14 @@ import { Request, Response } from 'express'
 import CommentsErrors from '../../errors/CommentsErrors'
 import CommentsModel from '../../model/CommentsModel/CommentsModel'
 
-class CommentsPublicationsController extends CommentsModel {
+class CommentsPublicationsController {
   async index (req: Request, res: Response) {
     const { page } = req.query
     const { PublicationId } = req.params
 
-    const comments = await super.ReadComments(Number(PublicationId), Number(page))
+    const { ReadComments } = new CommentsModel()
+
+    const comments = await ReadComments(Number(PublicationId), Number(page))
 
     res.json(comments)
   }
@@ -20,10 +22,11 @@ class CommentsPublicationsController extends CommentsModel {
     const { PublicationId } = req.params
 
     const { errorMessageNoContent, errorPublicationNotFound, errorInCreateCommentary } = new CommentsErrors()
+    const { ReadWithWhereFirst, CreateCommentary } = new CommentsModel()
 
     if (String(message).trim() === '') return res.status(errorMessageNoContent.status).json(errorMessageNoContent)
 
-    const ExistsPublication = await super.ReadWithWhereFirst('publications', { id: Number(PublicationId) })
+    const ExistsPublication = await ReadWithWhereFirst('publications', { id: Number(PublicationId) })
 
     if (!ExistsPublication) return res.status(errorPublicationNotFound.status).json(errorPublicationNotFound)
 
@@ -34,7 +37,7 @@ class CommentsPublicationsController extends CommentsModel {
     }
 
     try {
-      const comments = await super.CreateCommentary(data)
+      const comments = await CreateCommentary(data)
 
       return res.json(comments)
     } catch (e) {
@@ -51,8 +54,10 @@ class CommentsPublicationsController extends CommentsModel {
       user_id: Number(userId)
     }
 
+    const { DeleteCommentary } = new CommentsModel()
+
     try {
-      const userComments: any = await super.DeleteCommentary(data)
+      const userComments: any = await DeleteCommentary(data)
 
       if (userComments.status) return res.status(userComments.status).json(userComments)
 
@@ -65,4 +70,4 @@ class CommentsPublicationsController extends CommentsModel {
   }
 }
 
-export default CommentsPublicationsController
+export default new CommentsPublicationsController()

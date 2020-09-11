@@ -4,7 +4,7 @@ import SimpleCRUD from '../SimpleCRUD'
 import CommentsErros from '../../errors/CommentsErrors'
 
 // eslint-disable-next-line no-unused-vars
-import { IWhereUserDelete } from '../../interfaces/IWhere'
+import { IWhereUserDelete } from '../../interfaces/IUser'
 
 class CommentsModel extends SimpleCRUD {
   public async CreateCommentary (data: any) {

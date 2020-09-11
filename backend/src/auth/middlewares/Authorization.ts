@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 
 import SimpleCRUD from '../../model/SimpleCRUD'
 
-import { hash } from '../configs/hash.json'
+import { hash } from '../configs/tokenConfig.json'
 
 import AuthorizationError from '../../errors/AuthorizationError'
 import UserError from '../../errors/UserError'

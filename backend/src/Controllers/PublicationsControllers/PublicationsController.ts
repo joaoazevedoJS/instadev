@@ -6,12 +6,14 @@ import nowDateUTC from '../../utils/NowDateUTC'
 import PublicationsErrors from '../../errors/PublicationsErrors'
 import PublicationsModel from '../../model/PublicationsModel/PublicationsModel'
 
-class PublicationsController extends PublicationsModel {
+class PublicationsController {
   async index (req: Request, res: Response) {
     const { id } = req.params
     const { page } = req.query
 
-    const publications = await super.ReadUserPublication(Number(id), Number(page))
+    const { ReadUserPublication } = new PublicationsModel()
+
+    const publications = await ReadUserPublication(Number(id), Number(page))
 
     return res.json(publications)
   }
@@ -29,8 +31,10 @@ class PublicationsController extends PublicationsModel {
       user_id: userId
     }
 
+    const { CreateUserPublication } = new PublicationsModel()
+
     try {
-      const [id] = await super.CreateUserPublication(data)
+      const [id] = await CreateUserPublication(data)
 
       return res.status(201).json({ id, ...data })
     } catch (e) {
@@ -49,8 +53,10 @@ class PublicationsController extends PublicationsModel {
       user_id: Number(userId)
     }
 
+    const { DeleteUserPublication } = new PublicationsModel()
+
     try {
-      const unexpectedError: any = await super.DeleteUserPublication(data)
+      const unexpectedError: any = await DeleteUserPublication(data)
 
       if (unexpectedError.status) {
         return res.status(unexpectedError.status).json(unexpectedError)
@@ -71,4 +77,4 @@ class PublicationsController extends PublicationsModel {
   }
 }
 
-export default PublicationsController
+export default new PublicationsController()
