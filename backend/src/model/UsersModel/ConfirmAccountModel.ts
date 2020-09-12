@@ -1,26 +1,24 @@
 import SimpleCRUD from '../SimpleCRUD'
 
-// eslint-disable-next-line no-unused-vars
-import { IUserSelectConfirmAccount, IUserUpdateConfirmAccount } from '../../interfaces/IUser'
+import { IUserReturnConfirmAccount, IUserUpdateConfirmAccount } from '../../interfaces/IUser'
 
 class ConfirmAccountModel extends SimpleCRUD {
-  public async GetAccount (id: number) {
-    const select: IUserSelectConfirmAccount = {
-      code: 'accountCode',
-      confirm_account: 'confirmAccount'
-    }
+  constructor () { super('users') }
 
-    const user: IUserSelectConfirmAccount = await super.ReadReturnSelectWithWhereFirst('users', select, { id })
+  public GetAccount = async (id: number) => {
+    const select = ['accountCode as code', 'confirmAccount as confirm_account']
+
+    const user: IUserReturnConfirmAccount = await this.ReadReturnSelectWithWhereFirst(select, { id })
 
     return user
   }
 
-  public async UpdateAccount (id: number) {
+  public UpdateAccount = async (id: number) => {
     const data: IUserUpdateConfirmAccount = {
       confirmAccount: true
     }
 
-    await super.Update('users', data, { id })
+    await this.Update(data, { id })
   }
 }
 

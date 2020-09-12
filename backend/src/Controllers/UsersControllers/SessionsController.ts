@@ -2,14 +2,17 @@
 import { Request, Response } from 'express'
 import bycript from 'bcryptjs'
 
+import Mails from '../../smtp/Mails'
+
 import GenerateToken from '../../utils/GenerateToken'
 import randomCode from '../../utils/randomCode'
-import SendMail from '../../utils/SendMail'
 
 import knex from '../../database/connection'
 
 class SessionsController {
-  async signup (req: Request, res: Response) {
+  private _mails = new Mails()
+
+  public signup = async (req: Request, res: Response) => {
     // eslint-disable-next-line camelcase
     const { email, user_name, name, password } = req.body
 
@@ -35,7 +38,7 @@ class SessionsController {
 
       const [id] = await knex('users').insert(userDate)
 
-      await SendMail(email, 'no-reply@mail.instadev.com', 'confirm_account', { email, accountCode })
+      await this._mails.mailConfirmAccount(email, accountCode)
 
       userDate.password = undefined
 

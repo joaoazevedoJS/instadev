@@ -1,24 +1,35 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response, NextFunction } from 'express'
 
-import SimpleCRUD from '../model/SimpleCRUD'
+import UserModel from '../model/UsersModel/UserModel'
 import UserError from '../errors/UserError'
 
-async function URLDashboard (req: Request, res: Response, next: NextFunction) {
-  const { user } = req.query
+class URLDashboard {
+  private _model = new UserModel()
+  private _error = new UserError()
 
-  const { errorUserNotFound } = new UserError()
-  const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
+  public show = async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.query
 
-  if (!user) return res.status(errorUserNotFound.status).json(errorUserNotFound)
+    if (!user) {
+      return res.status(this._error.errorUserNotFound.status).json(this._error.errorUserNotFound)
+    }
 
-  const id = await ReadReturnSelectWithWhereFirst('users', { id: 'id' }, { user_name: String(user).trim() })
+    const user_name = String(user).trim()
 
-  if (!id) return res.status(errorUserNotFound.status).json(errorUserNotFound)
+    if (user_name.split(' ').length !== 1) {
+      return res.status(this._error.errorUserNameMalformed.status).json(this._error.errorUserNameMalformed)
+    }
 
-  req.params = id
+    const id = await this._model.ReadReturnSelectWithWhereFirst(['id'], { user_name })
 
-  next()
+    if (!id) {
+      return res.status(this._error.errorUserNotFound.status).json(this._error.errorUserNotFound)
+    }
+
+    req.params = id
+
+    next()
+  }
 }
 
-export default URLDashboard
+export default new URLDashboard()

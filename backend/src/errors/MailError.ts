@@ -14,7 +14,7 @@ class MailError {
 
   public errorLimitResend: IErrors = {
     status: 401,
-    message: 'Limit Resend Mail'
+    message: 'Maximum limit of resending email'
   }
 
   public errorWhileSendMail: IErrors = {

@@ -2,34 +2,27 @@ import knex from '../../database/connection'
 
 import SimpleCRUD from '../SimpleCRUD'
 
-// eslint-disable-next-line no-unused-vars
-import { IUserUpdate, IUserUpdateWhere, IUserSelectUserDashBoard, IUserReturnUserDashBoard } from '../../interfaces/IUser'
+import {
+  IUserUpdate,
+  IUserUpdateWhere,
+  IUserReturnUserDashBoard
+} from '../../interfaces/IUser'
 
 class UserModel extends SimpleCRUD {
-  public async ReadUserCount (table: string, where: object) {
-    const count = await knex(table).where(where).count().first()
+  constructor () { super('users') }
 
-    return count['count(*)']
-  }
+  public ReadUser = async (id: number) => {
+    const select: Array<string> = ['name', 'user_name', 'privateAccount']
 
-  public async ReadUser (id: number) {
-    const select: IUserSelectUserDashBoard = {
-      name: 'name',
-      user_name: 'user_name',
-      privateAccount: 'privateAccount'
-    }
-
-    const user: IUserReturnUserDashBoard = await super.ReadReturnSelectWithWhereFirst('users', select, { id })
+    const user: IUserReturnUserDashBoard = await this.ReadReturnSelectWithWhereFirst(select, { id })
 
     return user
   }
 
-  public async DeleteUser () {
+  public DeleteUser = async () => { }
 
-  }
-
-  public async UpdateUser (data: IUserUpdate, where: IUserUpdateWhere) {
-    await super.Update('users', data, where)
+  public UpdateUser = async (data: IUserUpdate, where: IUserUpdateWhere) => {
+    await this.Update(data, where)
   }
 }
 

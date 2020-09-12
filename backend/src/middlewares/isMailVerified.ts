@@ -1,20 +1,23 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response, NextFunction } from 'express'
 
-import UserError from '../errors/UserError'
-import SimpleCRUD from '../model/SimpleCRUD'
+import MailError from '../errors/MailError'
+import UserModel from '../model/UsersModel/UserModel'
 
-async function isMailVerified (req: Request, res: Response, next: NextFunction) {
-  const { userId } = req.userSession
+class IsMailVerified {
+  private _model = new UserModel()
+  private _error = new MailError()
 
-  const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
-  const { errorMailNotVerified } = new UserError()
+  public show = async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.userSession
 
-  const { confirmAccount } = await ReadReturnSelectWithWhereFirst('users', { confirmAccount: 'confirmAccount' }, { id: userId })
+    const user = await this._model.ReadReturnSelectWithWhereFirst(['confirmAccount'], { id: userId })
 
-  if (!!confirmAccount === false) return res.status(errorMailNotVerified.status).json(errorMailNotVerified)
+    if (!user.confirmAccount) {
+      return res.status(this._error.errorMailNotVerified.status).json(this._error.errorMailNotVerified)
+    }
 
-  next()
+    next()
+  }
 }
 
-export default isMailVerified
+export default new IsMailVerified()

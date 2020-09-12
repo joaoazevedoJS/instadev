@@ -2,34 +2,30 @@ import path from 'path'
 import nodemailer from 'nodemailer'
 import hbs from 'nodemailer-express-handlebars'
 
-import { host, port, auth } from '../configs/mail.json' // permite colocar html dentro de variáveis
+import { IMailerhandlebarsOptions, IMailProps } from '../interfaces/IMailer'
+import { host, port, auth } from '../configs/mail.json'
 
-interface handlebarsOptions {
-  viewEngine: {
-    partialsDir: string,
-    defaultLayout: undefined | string,
-  },
-  viewPath: string,
-  extName: string,
+class Mailer {
+  private _transport = nodemailer.createTransport({ host, port, auth })
+  private _mailsPath = path.resolve(__dirname, 'mails')
+
+  private handleBars = () => {
+    const hbs: IMailerhandlebarsOptions = {
+      viewEngine: { partialsDir: this._mailsPath, defaultLayout: undefined },
+      viewPath: this._mailsPath,
+      extName: '.html'
+    }
+
+    return hbs
+  }
+
+  private transport = () => {
+    return this._transport.use('compile', hbs(this.handleBars()))
+  }
+
+  protected sendMail = async (mailProps: IMailProps) => {
+    await this.transport().sendMail(mailProps)
+  }
 }
 
-const transport = nodemailer.createTransport({
-  host,
-  port,
-  auth
-})
-
-const mails = path.resolve(__dirname, 'mails')
-
-const handlebars: handlebarsOptions = {
-  viewEngine: {
-    partialsDir: mails,
-    defaultLayout: undefined
-  },
-  viewPath: mails,
-  extName: '.html'
-}
-
-transport.use('compile', hbs(handlebars))
-
-export default transport
+export default Mailer

@@ -12,25 +12,15 @@ export interface IUser {
   privateAccount: boolean
 }
 
-export interface IUserSelectUserDashBoard {
-  name: string
-  user_name: string
-  privateAccount: string
-}
-
 export interface IUserReturnUserDashBoard {
   name: string
   user_name: string
   privateAccount: boolean
 }
 
-export interface IUserSelectConfirmAccount {
+export interface IUserReturnConfirmAccount {
   code: string,
   confirm_account: string
-}
-
-export interface IUserSelectLimitResend {
-  limit_resend: string
 }
 
 export interface IUserReturnLimitResend {

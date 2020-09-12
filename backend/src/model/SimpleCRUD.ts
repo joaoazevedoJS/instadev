@@ -1,46 +1,55 @@
 import knex from '../database/connection'
 
 class SimpleCRUD {
-  protected async Create (table: string, data: any) {
-    const createData = await knex(table).insert(data)
+  // eslint-disable-next-line no-useless-constructor
+  constructor (public table: string) {}
+
+  public Create = async (data: any) => {
+    const createData = await knex(this.table).insert(data)
 
     return createData
   }
 
-  public async Read (table: string) {
-    return await knex(table).select('*')
+  public Read = async () => {
+    return await knex(this.table).select('*')
   }
 
-  public async ReadFirst (table: string) {
-    return await knex(table).select('*').first()
+  public ReadFirst = async () => {
+    return await knex(this.table).select('*').first()
   }
 
-  public async ReadWithWhere (table: string, where: object) {
-    return await knex(table).where(where).select('*')
+  public ReadWithWhere = async (where: object) => {
+    return await knex(this.table).where(where).select('*')
   }
 
-  public async ReadWithWhereFirst (table: string, where: object) {
-    return await knex(table).where(where).select('*').first()
+  public ReadWithWhereCount = async (table: string, where: object) => {
+    const count = await knex(table).where(where).count().first()
+
+    return count['count(*)']
   }
 
-  public async ReadReturnSelect (table: string, select: object) {
-    return await knex(table).select(select)
+  public ReadWithWhereFirst = async (where: object) => {
+    return await knex(this.table).where(where).select('*').first()
   }
 
-  public async ReadReturnSelectWithWhere (table: string, select: object, where: object) {
-    return await knex(table).select(select).where(where)
+  public ReadReturnSelect = async (select: Array<string>) => {
+    return await knex(this.table).select(select)
   }
 
-  public async ReadReturnSelectWithWhereFirst (table: string, select: object, where: object) {
-    return await knex(table).select(select).where(where).first()
+  public ReadReturnSelectWithWhere = async (select: Array<string>, where: object) => {
+    return await knex(this.table).select(select).where(where)
   }
 
-  protected async Update (table: string, data: object, where: object) {
-    await knex(table).update(data).where(where)
+  public ReadReturnSelectWithWhereFirst = async (select: Array<string>, where: object) => {
+    return await knex(this.table).select(select).where(where).first()
   }
 
-  protected async Delete (table: string, where: object) {
-    await knex(table).where(where).first().delete()
+  public Update = async (data: object, where: object) => {
+    await knex(this.table).update(data).where(where)
+  }
+
+  public Delete = async (where: object) => {
+    await knex(this.table).where(where).first().delete()
   }
 }
 

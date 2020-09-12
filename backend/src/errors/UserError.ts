@@ -21,6 +21,11 @@ class UserError {
     status: 400,
     message: 'User_name Malformed'
   }
+
+  public errorInvalidUserId: IErrors = {
+    status: 400,
+    message: 'Invalid user ID'
+  }
 }
 
 export default UserError
