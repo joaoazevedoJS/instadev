@@ -3,28 +3,26 @@ import { Request, Response, NextFunction } from 'express'
 import UserModel from '../model/UsersModel/UserModel'
 import UserError from '../errors/UserError'
 
+import checkPartsAndReturnName from '../utils/checkPartsAndReturnName'
+
 class URLDashboard {
   private _model = new UserModel()
-  private _error = new UserError()
+  private _error = (response: Response) => new UserError(response)
 
   public show = async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req.query
 
-    if (!user) {
-      return res.status(this._error.errorUserNotFound.status).json(this._error.errorUserNotFound)
-    }
+    const error = this._error(res)
 
-    const user_name = String(user).trim()
+    if (!user) return error.userNotFound()
 
-    if (user_name.split(' ').length !== 1) {
-      return res.status(this._error.errorUserNameMalformed.status).json(this._error.errorUserNameMalformed)
-    }
+    const user_name = checkPartsAndReturnName(String(user))
+
+    if (!user_name) return error.userNameMalformed()
 
     const id = await this._model.ReadReturnSelectWithWhereFirst(['id'], { user_name })
 
-    if (!id) {
-      return res.status(this._error.errorUserNotFound.status).json(this._error.errorUserNotFound)
-    }
+    if (!id) return error.userNotFound()
 
     req.params = id
 

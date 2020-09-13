@@ -11,7 +11,7 @@ import {
 class UserModel extends SimpleCRUD {
   constructor () { super('users') }
 
-  public ReadUser = async (id: number) => {
+  public ReadUserWithSelect = async (id: number) => {
     const select: Array<string> = ['name', 'user_name', 'privateAccount']
 
     const user: IUserReturnUserDashBoard = await this.ReadReturnSelectWithWhereFirst(select, { id })

@@ -1,10 +1,8 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
-
-import { hash } from '../configs/tokenConfig.json'
-
 import { Decoded } from '../../interfaces/IAuthorization'
+
+import jwt from 'jsonwebtoken'
+import { hash } from '../configs/tokenConfig.json'
 
 import UserModel from '../../model/UsersModel/UserModel'
 
@@ -13,32 +11,29 @@ import UserError from '../../errors/UserError'
 
 class Authorization {
   private _model = new UserModel()
-  private _authError = new AuthorizationError()
-  private _userError = new UserError()
+  private _authError = (response: Response) => new AuthorizationError(response)
+  private _userError = (response: Response) => new UserError(response)
 
   public show = async (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers.authorization
 
-    if (!auth) {
-      return res.status(this._authError.errorNoTokenProvided.status).json(this._authError.errorNoTokenProvided)
-    }
+    const authError = this._authError(res)
+    const userError = this._userError(res)
+
+    if (!auth) return authError.noTokenProvided()
 
     const [schema, token] = auth.split(' ')
 
-    if (!/^Bearer$/i.test(schema) || !token) {
-      return res.status(this._authError.errorTokenMalformed.status).json(this._authError.errorTokenMalformed)
-    }
+    if (!/^Bearer$/i.test(schema) || !token) return authError.tokenMalformed()
 
     jwt.verify(token, hash, async (err, decoded: Decoded) => {
-      if (err) {
-        return res.status(this._authError.errorTokenInvalid.status).json(this._authError.errorTokenInvalid)
-      }
+      if (err) return authError.tokenInvalid()
 
       const userId = decoded.id
 
       const user = await this._model.ReadWithWhereFirst({ id: userId })
 
-      if (!user) return res.status(this._userError.errorUserNotFound.status).json(this._userError.errorUserNotFound)
+      if (!user) return userError.userNotFound()
 
       req.userSession = { userId }
 

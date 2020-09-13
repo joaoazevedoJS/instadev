@@ -1,15 +1,23 @@
-export interface IUser {
-  id: number
+export interface IUserCreateAccount {
   email: string
   user_name: string
   name: string
   password: string
-  photo: string
-  confirmAccount: string
+  confirmAccount: boolean
   accountCode: string
+  privateAccount: boolean
+}
+
+export interface IUser extends IUserCreateAccount {
+  id: number
+  photo: string
   limit_resend: number
   limit_date_resend: string
-  privateAccount: boolean
+}
+
+export interface IUserReturnPassword {
+  id: number
+  password: string
 }
 
 export interface IUserReturnUserDashBoard {
@@ -23,11 +31,7 @@ export interface IUserReturnConfirmAccount {
   confirm_account: string
 }
 
-export interface IUserReturnLimitResend {
-  limit_resend: number
-}
-
-export interface IUserUpdateLimitResend {
+export interface IUserLimitResend {
   limit_resend: number
 }
 
@@ -45,9 +49,4 @@ export interface IUserUpdate {
 
 export interface IUserUpdateWhere {
   id: number
-}
-
-export interface IWhereUserDelete {
-  id: number,
-  user_id: number
 }

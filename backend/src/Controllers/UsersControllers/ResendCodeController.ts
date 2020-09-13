@@ -9,37 +9,36 @@ import Mails from '../../smtp/Mails'
 import { IUser } from '../../interfaces/IUser'
 
 class ResendCodeController {
-  private _model = new ResendCodeModel()
-  private _error = new MailError()
+  private _model = (id: number) => new ResendCodeModel(id)
+  private _error = (response: Response) => new MailError(response)
   private _mails = new Mails()
 
   public store = async (req: Request, res: Response) => {
     const { userId } = req.userSession
 
-    const user = await this._model.GetAccount(userId)
+    const model = this._model(userId)
+    const error = this._error(res)
 
-    if (user.confirmAccount) {
-      return res.status(this._error.errorMailAlreadyVerified.status).json(this._error.errorMailAlreadyVerified)
-    }
+    const user = await model.GetAccount()
+
+    if (user.confirmAccount) return error.mailAlreadyVerified()
 
     if (user.limit_date_resend) {
       const maxLimitResend = await this.updateLimitResend(user)
 
-      if (maxLimitResend) {
-        return res.status(this._error.errorLimitResend.status).json(this._error.errorLimitResend)
-      }
+      if (maxLimitResend) return error.limitResend()
     }
 
-    if (user.limit_resend === 3) {
-      await this._model.UpdateLimiteData(user.id)
+    if (user.limit_resend >= 3) {
+      await model.UpdateLimiteData()
     }
 
     try {
       await this.sendCode(user)
 
       return res.json({ sucess: 'Email been send' })
-    } catch (error) {
-      return res.status(this._error.errorWhileSendMail.status).json(this._error.errorWhileSendMail)
+    } catch (e) {
+      return error.whileSendMail(e.message)
     }
   }
 
@@ -47,8 +46,10 @@ class ResendCodeController {
     const dateParse = new Date(Date.parse(user.limit_date_resend))
     const date = new Date()
 
+    const model = this._model(user.id)
+
     if (dateParse < date) {
-      await this._model.UpdateLimiteResend(user.id, 0)
+      await model.UpdateLimiteResend(0)
 
       return false
     }
@@ -59,9 +60,11 @@ class ResendCodeController {
   private sendCode = async (user: IUser): Promise<void> => {
     await this._mails.mailConfirmAccount(user.email, user.accountCode)
 
-    const { limit_resend } = await this._model.GetLimit(user.id)
+    const model = this._model(user.id)
 
-    await this._model.UpdateLimiteResend(user.id, limit_resend + 1)
+    const { limit_resend } = await model.GetLimit()
+
+    await model.UpdateLimiteResend(limit_resend + 1)
   }
 }
 

@@ -1,49 +1,43 @@
 import SimpleCRUD from '../SimpleCRUD'
 import nowDateUTC from '../../utils/NowDateUTC'
 
-// eslint-disable-next-line no-unused-vars
 import {
   IUser,
-  IUserUpdateLimitResend,
-  IUserUpdateLimiteData,
-  IUserReturnLimitResend
+  IUserLimitResend,
+  IUserUpdateLimiteData
 } from '../../interfaces/IUser'
 
 class ResendCodeModel extends SimpleCRUD {
-  constructor () {
+  constructor (private id: number) {
     super('users')
   }
 
-  public GetAccount = async (id: number) => {
-    const user: IUser = await this.ReadWithWhereFirst({ id })
+  public GetAccount = async () => {
+    const user: IUser = await this.ReadWithWhereFirst({ id: this.id })
 
     user.password = undefined
 
     return user
   };
 
-  public UpdateLimiteResend = async (id: number, limit: number) => {
-    const data: IUserUpdateLimitResend = {
-      limit_resend: limit
-    }
+  public UpdateLimiteResend = async (limit_resend: number) => {
+    const data: IUserLimitResend = { limit_resend }
 
-    await this.Update(data, { id })
+    await this.Update(data, { id: this.id })
   };
 
-  public UpdateLimiteData = async (id: number) => {
-    const dateUTC = nowDateUTC(3)
+  public UpdateLimiteData = async () => {
+    const limit_date_resend = nowDateUTC(3)
 
-    const data: IUserUpdateLimiteData = {
-      limit_date_resend: dateUTC
-    }
+    const data: IUserUpdateLimiteData = { limit_date_resend }
 
-    await this.Update(data, { id })
+    await this.Update(data, { id: this.id })
   };
 
-  public GetLimit = async (id: number) => {
+  public GetLimit = async () => {
     const select = ['limit_resend']
 
-    const limit: IUserReturnLimitResend = await this.ReadReturnSelectWithWhereFirst(select, { id })
+    const limit: IUserLimitResend = await this.ReadReturnSelectWithWhereFirst(select, { id: this.id })
 
     return limit
   };

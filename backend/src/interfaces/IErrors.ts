@@ -1,4 +1,5 @@
-export default interface IErrors {
+export interface IErrors {
   status: number
   message: string
+  catchMessage?: string
 }

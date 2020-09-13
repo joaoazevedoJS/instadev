@@ -4,15 +4,17 @@ import { Request, Response } from 'express'
 import SearchPublicationsModel from '../../model/PublicationsModel/SearchPublicationsModel'
 
 class SearchPublicationsControllers {
-  public async index (req: Request, res: Response) {
-    const { userId } = req.userSession
-    const { page, typePublication } = req.query
+  private _model = (page: number, order?: string) => new SearchPublicationsModel(page, order)
 
-    const { HomePublications, GlobalPublications } = new SearchPublicationsModel()
+  public index = async (req: Request, res: Response) => {
+    const { userId } = req.userSession
+    const { page, typePublication, order } = req.query
+
+    const model = this._model(Number(page), String(order))
 
     const publications = typePublication === 'Home'
-      ? await HomePublications(userId, Number(page))
-      : await GlobalPublications(Number(page))
+      ? await model.HomePublications(userId)
+      : await model.GlobalPublications()
 
     return res.json(publications)
   }

@@ -5,9 +5,10 @@ export async function up (knex: Knex) {
   return knex.schema.createTable('publications', table => {
     table.increments('id').primary()
     table.string('photo').notNullable()
-    table.string('legend')
+    table.string('description')
     table.integer('views')
     table.date('date').notNullable()
+
     table.integer('user_id').notNullable()
       .references('id').inTable('users')
   })

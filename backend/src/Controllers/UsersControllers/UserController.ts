@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Request, Response } from 'express'
 
 import UserModel from '../../model/UsersModel/UserModel'
@@ -6,7 +5,7 @@ import UserError from '../../errors/UserError'
 
 class UserController {
   private _model = new UserModel()
-  private _error = new UserError()
+  private _error = (response: Response) => new UserError(response)
 
   public show = async (req: Request, res: Response) => {
     // it get id in URLDashboard.ts
@@ -16,7 +15,7 @@ class UserController {
     const followers = await this._model.ReadWithWhereCount('following', { following_id: Number(id) })
     const publications = await this._model.ReadWithWhereCount('publications', { user_id: Number(id) })
 
-    const user = await this._model.ReadUser(Number(id))
+    const user = await this._model.ReadUserWithSelect(Number(id))
 
     res.header({
       'X-Total-Following': following,
@@ -31,6 +30,8 @@ class UserController {
     const { userId } = req.userSession
     const { privateAccount } = req.body
 
+    const error = this._error(res)
+
     const data = {
       privateAccount: Boolean(privateAccount)
     }
@@ -40,7 +41,7 @@ class UserController {
 
       return res.send()
     } catch (e) {
-      return res.status(this._error.errorUserUpdate.status).json(this._error.errorUserUpdate)
+      return error.userUpdate(e.message)
     }
   }
 }

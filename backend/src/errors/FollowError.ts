@@ -1,30 +1,27 @@
-import IErrors from '../interfaces/IErrors'
+import Errors from './Errors'
 
-class FollowError {
-  public errorCantFollow: IErrors = {
-    status: 401,
-    message: "You can't following you"
+import { Response } from 'express'
+
+class FollowError extends Errors {
+  constructor (protected response: Response) {
+    super(response)
   }
 
-  public errorCantUnFollow: IErrors = {
-    status: 401,
-    message: "You can't unfollowing you"
-  }
+  private _errorCantFollow = this.FactoryErrors(401, "You can't following you")
+  private _errorCantUnFollow = this.FactoryErrors(401, "You can't unfollowing you")
+  private _errorCantFollowAgain = this.FactoryErrors(401, "You can't following again")
 
-  public errorCantFollowAgain: IErrors = {
-    status: 401,
-    message: "You can't following again"
-  }
+  private _errorCreateNewFollow = (catchMsg: string) =>
+    this.FactoryErrors(400, 'Unexpected error while create a new follow', catchMsg)
 
-  public errorCreateNewFollow: IErrors = {
-    status: 400,
-    message: 'Unexpected error while create a new follow'
-  }
+  private _errorDeleteFollow = (catchMsg: string) =>
+    this.FactoryErrors(400, 'Unexpected error while delete the follow', catchMsg)
 
-  public errorDeleteFollow: IErrors = {
-    status: 400,
-    message: 'Unexpected error while delete the follow'
-  }
+  public cantFollow = () => this.ResponseError(this._errorCantFollow)
+  public cantUnFollow = () => this.ResponseError(this._errorCantUnFollow)
+  public cantFollowAgain = () => this.ResponseError(this._errorCantFollowAgain)
+  public createNewFollow = (catchMsg: string) => this.ResponseError(this._errorCreateNewFollow(catchMsg))
+  public deleteFollow = (catchMsg: string) => this.ResponseError(this._errorDeleteFollow(catchMsg))
 }
 
 export default FollowError

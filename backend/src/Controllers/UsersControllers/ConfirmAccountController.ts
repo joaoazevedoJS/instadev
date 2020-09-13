@@ -7,30 +7,28 @@ import MailError from '../../errors/MailError'
 
 class ConfirmAccountController {
   private _model = new ConfirmAccountModel()
-  private _userError = new UserError()
-  private _mailError = new MailError()
+  private _userError = (response: Response) => new UserError(response)
+  private _mailError = (response: Response) => new MailError(response)
 
   public update = async (req: Request, res: Response) => {
     const { userId } = req.userSession
     const { code } = req.params
 
+    const userError = this._userError(res)
+    const mailError = this._mailError(res)
+
     const account = await this._model.GetAccount(userId)
 
-    if (code !== account.code) {
-      return res.status(this._userError.errorCodeNotExists.status).json(this._userError.errorCodeNotExists)
-    }
+    if (code !== account.code) return userError.codeNotExists()
 
-    if (account.confirm_account) {
-      return res.status(this._mailError.errorMailAlreadyVerified.status)
-        .json(this._mailError.errorMailAlreadyVerified)
-    }
+    if (account.confirm_account) return mailError.mailAlreadyVerified()
 
     try {
       await this._model.UpdateAccount(userId)
 
       return res.send('')
     } catch (e) {
-      return res.status(this._userError.errorUserUpdate.status).json(this._userError.errorUserUpdate)
+      return userError.userUpdate(e.message)
     }
   }
 }

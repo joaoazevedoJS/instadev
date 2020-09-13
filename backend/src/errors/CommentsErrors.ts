@@ -1,31 +1,25 @@
-// eslint-disable-next-line no-unused-vars
-import IErrors from '../interfaces/IErrors'
+import Errors from './Errors'
 
-class CommentsErros {
-  public errorMessageNoContent: IErrors = {
-    status: 400,
-    message: 'Message no content'
+import { Response } from 'express'
+
+class CommentsErros extends Errors {
+  constructor (protected response: Response) {
+    super(response)
   }
 
-  public errorPublicationNotFound: IErrors = {
-    status: 404,
-    message: 'Publication not Found'
-  }
+  private _errorMessageNoContent = this.FactoryErrors(400, 'Message no content')
+  private _errorCommentaryNotFound = this.FactoryErrors(404, 'Commentary not Found')
 
-  public errorInCreateCommentary: IErrors = {
-    status: 400,
-    message: 'Unexpected error while creating new commentary'
-  }
+  private _errorInCreateCommentary = (catchMsg: string) =>
+    this.FactoryErrors(400, 'Unexpected error while creating new commentary', catchMsg)
 
-  public errorCommentaryNotFound: IErrors = {
-    status: 404,
-    message: 'Commentary not Found'
-  }
+  private _errorInDeleteCommentary = (catchMsg: string) =>
+    this.FactoryErrors(400, 'Unexpected error while delete commentary', catchMsg)
 
-  public errorInDeleteCommentary: IErrors = {
-    status: 400,
-    message: 'Unexpected error while delete commentary'
-  }
+  public messageNoContent = () => this.ResponseError(this._errorMessageNoContent)
+  public commentaryNotFound = () => this.ResponseError(this._errorCommentaryNotFound)
+  public createCommentary = (catchMsg: string) => this.ResponseError(this._errorInCreateCommentary(catchMsg))
+  public deleteCommentary = (catchMsg: string) => this.ResponseError(this._errorInDeleteCommentary(catchMsg))
 }
 
 export default CommentsErros

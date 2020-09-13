@@ -12,8 +12,8 @@ class FollowController {
   private _followModel = new FollowModel()
   private _userModel = new UserModel()
 
-  private _followError = new FollowError()
-  private _userError = new UserError()
+  private _followError = (response: Response) => new FollowError(response)
+  private _userError = (response: Response) => new UserError(response)
 
   public index = async (req: Request, res: Response) => {
     const { id } = req.params
@@ -32,38 +32,31 @@ class FollowController {
     const { userId } = req.userSession
     const { followId } = req.params
 
+    const userError = this._userError(res)
+    const followError = this._followError(res)
+
     const following_id = Number(followId)
 
-    const ExistsUser = this._userModel.ReadWithWhereFirst({ id: following_id })
+    const existsUser = await this._userModel.ReadWithWhereFirst({ id: following_id })
 
-    if (!ExistsUser) {
-      return res.status(this._userError.errorUserNotFound.status).json(this._userError.errorUserNotFound)
-    }
+    if (!existsUser) return userError.userNotFound()
 
-    if (isNaN(following_id)) {
-      return res.status(this._userError.errorInvalidUserId.status).json(this._userError.errorInvalidUserId)
-    }
+    if (isNaN(following_id)) return userError.invalidUserId()
 
-    if (userId === following_id) {
-      return res.status(this._followError.errorCantFollow.status).json(this._followError.errorCantFollow)
-    }
+    if (userId === following_id) return followError.cantFollow()
 
     const data = { user_id: userId, following_id }
 
     const isFollowing = await this._followModel.isFollow(data)
 
-    if (isFollowing) {
-      return res.status(this._followError.errorCantFollowAgain.status)
-        .json(this._followError.errorCantFollowAgain)
-    }
+    if (isFollowing) return followError.cantFollowAgain()
 
     try {
       const following = await this._followModel.createFollow(data)
 
       return res.json(following)
     } catch (e) {
-      return res.status(this._followError.errorCreateNewFollow.status)
-        .json(this._followError.errorCreateNewFollow)
+      return followError.createNewFollow(e.message)
     }
   }
 
@@ -71,15 +64,18 @@ class FollowController {
     const { userId } = req.userSession
     const { followId } = req.params
 
+    const userError = this._userError(res)
+    const followError = this._followError(res)
+
     const following_id = Number(followId)
 
-    if (isNaN(following_id)) {
-      return res.status(this._userError.errorInvalidUserId.status).json(this._userError.errorInvalidUserId)
-    }
+    const existsUser = await this._userModel.ReadWithWhereFirst({ id: following_id })
 
-    if (userId === following_id) {
-      return res.status(this._followError.errorCantUnFollow.status).json(this._followError.errorCantUnFollow)
-    }
+    if (!existsUser) return userError.userNotFound()
+
+    if (isNaN(following_id)) return userError.invalidUserId()
+
+    if (userId === following_id) return followError.cantUnFollow()
 
     const where = { user_id: userId, following_id }
 
@@ -88,7 +84,7 @@ class FollowController {
 
       return res.send('')
     } catch (e) {
-      return res.status(this._followError.errorDeleteFollow.status).json(this._followError.errorDeleteFollow)
+      return followError.deleteFollow(e.message)
     }
   }
 }

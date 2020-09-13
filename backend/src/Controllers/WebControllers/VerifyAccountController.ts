@@ -1,33 +1,32 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import SimpleCRUD from '../../model/SimpleCRUD'
+import UserModel from '../../model/UsersModel/UserModel'
 import UserError from '../../errors/UserError'
 
+import checkPartsAndReturnName from '../../utils/checkPartsAndReturnName'
+
 class VerifyAccountController {
-  async verifyEmail (req: Request, res: Response) {
+  private _model = new UserModel()
+  private _error = (response: Response) => new UserError(response)
+
+  public verifyEmail = async (req: Request, res: Response) => {
     const { email } = req.body
 
-    const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
-
-    const mailExists = await ReadReturnSelectWithWhereFirst('users', { email: 'email' }, { email })
+    const mailExists = await this._model.ReadReturnSelectWithWhereFirst(['email'], { email })
 
     return res.json({ exists: !!mailExists })
   }
 
-  async verifyUserName (req: Request, res: Response) {
-    // eslint-disable-next-line camelcase
-    const { user_name } = req.body
+  public verifyUserName = async (req: Request, res: Response) => {
+    let { user_name } = req.body
 
-    const parts = String(user_name).split(' ')
+    const error = this._error(res)
 
-    const { errorUserNameMalformed } = new UserError()
+    user_name = checkPartsAndReturnName(String(user_name))
 
-    if (parts.length !== 1) return res.status(errorUserNameMalformed.status).json(errorUserNameMalformed)
+    if (!user_name) return error.userNameMalformed()
 
-    const { ReadReturnSelectWithWhereFirst } = new SimpleCRUD()
-
-    const userNameExists = await ReadReturnSelectWithWhereFirst('users', { user_name: 'user_name' }, { user_name })
+    const userNameExists = await this._model.ReadReturnSelectWithWhereFirst(['user_name'], { user_name })
 
     return res.json({ exists: !!userNameExists })
   }

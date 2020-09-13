@@ -24,7 +24,7 @@ class SearchFollowModel extends SimpleCRUD {
     return page
   };
 
-  ReadUserFollowing = async () => {
+  public ReadUserFollowing = async () => {
     const select = ['id', 'user_id', 'following_id']
 
     const following: IFollowing = await this.ReadFollowPagination('user_id', select)
@@ -32,7 +32,7 @@ class SearchFollowModel extends SimpleCRUD {
     return following
   };
 
-  ReadUserFollowers = async () => {
+  public ReadUserFollowers = async () => {
     const select = ['id', 'following_id as user_id', 'user_id as followers_id']
 
     const followers: IFollowers = await this.ReadFollowPagination('following_id', select)

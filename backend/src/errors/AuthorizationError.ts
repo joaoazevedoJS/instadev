@@ -1,21 +1,19 @@
-// eslint-disable-next-line no-unused-vars
-import IErrors from '../interfaces/IErrors'
+import Errors from './Errors'
 
-class AuthorizationError {
-  public errorNoTokenProvided: IErrors = {
-    status: 401,
-    message: 'No Token Provided'
+import { Response } from 'express'
+
+class AuthorizationError extends Errors {
+  constructor (protected response: Response) {
+    super(response)
   }
 
-  public errorTokenMalformed: IErrors = {
-    status: 401,
-    message: 'Token Malformed'
-  }
+  private _errorNoTokenProvided = this.FactoryErrors(401, 'No Token Provided')
+  private _errorTokenMalformed = this.FactoryErrors(401, 'Token Malformed')
+  private _errorTokenInvalid = this.FactoryErrors(401, 'Token Invalid')
 
-  public errorTokenInvalid: IErrors = {
-    status: 401,
-    message: 'Token Invalid'
-  }
+  public noTokenProvided = () => this.ResponseError(this._errorNoTokenProvided)
+  public tokenMalformed = () => this.ResponseError(this._errorTokenMalformed)
+  public tokenInvalid = () => this.ResponseError(this._errorTokenInvalid)
 }
 
 export default AuthorizationError

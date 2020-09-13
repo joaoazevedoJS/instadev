@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 import bycript from 'bcryptjs'
 
@@ -8,61 +7,72 @@ import GenerateToken from '../../utils/GenerateToken'
 import randomCode from '../../utils/randomCode'
 
 import knex from '../../database/connection'
+import SessionsModel from '../../model/UsersModel/SessionsModel'
+import checkPartsAndReturnName from '../../utils/checkPartsAndReturnName'
+import UserError from '../../errors/UserError'
 
 class SessionsController {
   private _mails = new Mails()
+  private _model = new SessionsModel()
+  private _error = (response: Response) => new UserError(response)
 
   public signup = async (req: Request, res: Response) => {
-    // eslint-disable-next-line camelcase
-    const { email, user_name, name, password } = req.body
+    let { email, user_name, name, password } = req.body
 
-    const ExistsAccount = await knex('users')
-      .where('email', String(email))
-      .orWhere('user_name', String(user_name)).first()
+    user_name = checkPartsAndReturnName(String(user_name))
 
-    if (ExistsAccount) return res.status(409).json({ error: 'Account Exists, try again' })
+    const error = this._error(res)
+
+    const existAccount = await this._model.existAccount(String(email), user_name)
+
+    if (existAccount) return error.existsAccount()
 
     try {
-      const hash = await bycript.hash(password, 10)
-      const accountCode = randomCode(6)
+      const data = await this.FactoryCreateAccountData(String(email), user_name, String(name), String(password))
 
-      const userDate = {
-        email,
-        user_name,
-        name,
-        password: hash,
-        confirmAccount: false,
-        accountCode,
-        privateAccount: false
-      }
+      const id = await this._model.createAccount(data)
 
-      const [id] = await knex('users').insert(userDate)
+      await this._mails.mailConfirmAccount(email, data.accountCode)
 
-      await this._mails.mailConfirmAccount(email, accountCode)
+      data.password = undefined
 
-      userDate.password = undefined
-
-      res.json({ id, ...userDate })
+      return res.json({ id, ...data })
     } catch (e) {
-      return res.status(406).json({ error: 'Failed to register new user!' })
+      return error.userCreateAccount(e.message)
     }
   }
 
-  async signin (req: Request, res: Response) {
+  public signin = async (req: Request, res: Response) => {
     const { email, password } = req.body
 
-    const user = await knex('users')
-      .where('email', email).first()
+    const error = this._error(res)
 
-    if (!user) return res.status(404).json({ error: 'User not Found' })
+    const user = await this._model.getPassword(String(email))
 
-    const verifyPassword = await bycript.compare(password, user.password)
+    if (!user) return error.userNotFound()
 
-    if (!verifyPassword) return res.status(401).json({ error: 'Invalid password, try again!' })
+    const verifyPassword = await bycript.compare(String(password), user.password)
+
+    if (!verifyPassword) return error.invalidPassword()
 
     const token = GenerateToken(user.id)
 
     return res.json({ token })
+  }
+
+  private FactoryCreateAccountData = async (email: string, user_name: string, name: string, password: string) => {
+    const hash = await bycript.hash(password, 10)
+    const accountCode = randomCode(6)
+
+    return {
+      email,
+      user_name,
+      name,
+      password: hash,
+      confirmAccount: false,
+      accountCode,
+      privateAccount: false
+    }
   }
 }
 
