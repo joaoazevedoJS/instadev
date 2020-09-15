@@ -6,6 +6,7 @@ export interface IUserCreateAccount {
   confirmAccount: boolean
   accountCode: string
   privateAccount: boolean
+  created_at: string
 }
 
 export interface IUser extends IUserCreateAccount {

@@ -1,7 +1,7 @@
 export interface ICreatePublication {
   photo: string
   description: string
-  date: string
+  created_at: string
   user_id: number
 }
 

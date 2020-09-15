@@ -5,8 +5,8 @@ import Mails from '../../smtp/Mails'
 
 import GenerateToken from '../../utils/GenerateToken'
 import randomCode from '../../utils/randomCode'
+import nowDateUTC from '../../utils/NowDateUTC'
 
-import knex from '../../database/connection'
 import SessionsModel from '../../model/UsersModel/SessionsModel'
 import checkPartsAndReturnName from '../../utils/checkPartsAndReturnName'
 import UserError from '../../errors/UserError'
@@ -63,6 +63,7 @@ class SessionsController {
   private FactoryCreateAccountData = async (email: string, user_name: string, name: string, password: string) => {
     const hash = await bycript.hash(password, 10)
     const accountCode = randomCode(6)
+    const created_at = nowDateUTC()
 
     return {
       email,
@@ -71,7 +72,8 @@ class SessionsController {
       password: hash,
       confirmAccount: false,
       accountCode,
-      privateAccount: false
+      privateAccount: false,
+      created_at
     }
   }
 }

@@ -14,6 +14,8 @@ export async function up (knex: Knex) {
     table.integer('user_id')
       .notNullable()
       .references('id').inTable('users')
+
+    table.date('created_at').notNullable()
   })
 }
 

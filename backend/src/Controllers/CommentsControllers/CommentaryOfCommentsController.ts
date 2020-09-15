@@ -2,21 +2,24 @@
 import { Request, Response } from 'express'
 
 import CommentsErrors from '../../errors/CommentsErrors'
-import CommentsOfCommentaryModel from '../../model/CommentsModel/CommentsOfCommentaryModel'
+import CommentsModel from '../../model/CommentsModel/CommentsModel'
+import CommentaryOfCommentsModel from '../../model/CommentsModel/CommentaryOfCommentsModel'
 
 class CommentaryOfCommentsController {
-  async store (req: Request, res: Response) {
+  private _commentaryCommentsModel = new CommentaryOfCommentsModel()
+  private _commentsModel = new CommentsModel()
+  private _error = (response: Response) => new CommentsErrors(response)
+
+  public store = async (req: Request, res: Response) => {
     const { userId } = req.userSession
     const { message } = req.body
     const { CommentId } = req.params
 
-    const { ReadWithWhereFirst, CreateCommentary } = new CommentsOfCommentaryModel()
+    const error = this._error(res)
 
-    const ExistsComment = await ReadWithWhereFirst('publications_comments', { id: Number(CommentId) })
+    const existsComment = await this._commentsModel.existsComment(userId)
 
-    const { errorCommentaryNotFound, errorInDeleteCommentary } = new CommentsErrors()
-
-    if (!ExistsComment) return res.status(errorCommentaryNotFound.status).json(errorCommentaryNotFound)
+    if (!existsComment) return error.commentaryNotFound()
 
     const data = {
       message,
@@ -29,11 +32,11 @@ class CommentaryOfCommentsController {
 
       return res.json(comments)
     } catch (e) {
-      return res.status(errorInDeleteCommentary.status).json(errorInDeleteCommentary)
+      return error.deleteCommentary(e.message)
     }
   }
 
-  async destroy (req: Request, res: Response) {
+  public destroy = async (req: Request, res: Response) => {
     const { userId } = req.userSession
     const { CommentFromCommentsId } = req.params
 

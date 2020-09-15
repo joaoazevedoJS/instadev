@@ -6,8 +6,10 @@ import CommentsErros from '../../errors/CommentsErrors'
 import { IWhereUserDelete } from '../../interfaces/IUser'
 
 class CommentsOfCommentaryModel extends SimpleCRUD {
+  constructor () { super('comments_comment') }
+
   public async CreateCommentary (data: any) {
-    const createData = await super.Create('comments_comment', data)
+    const createData = await super.Create(data)
 
     return createData
   }

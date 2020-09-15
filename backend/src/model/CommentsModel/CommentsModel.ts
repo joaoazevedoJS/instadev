@@ -3,17 +3,18 @@ import SimpleCRUD from '../SimpleCRUD'
 
 import CommentsErros from '../../errors/CommentsErrors'
 
-// eslint-disable-next-line no-unused-vars
-import { IWhereUserDelete } from '../../interfaces/IUser'
+import { IComment, ICreateCommentary } from '../../interfaces/IComments'
 
 class CommentsModel extends SimpleCRUD {
-  public async CreateCommentary (data: any) {
-    const createData = await super.Create('publications_comments', data)
+  constructor () { super('publications_comments') }
 
-    return createData
+  public CreateCommentary = async (data: ICreateCommentary) => {
+    const createData = await this.Create(data)
+
+    return createData[0]
   }
 
-  public async ReadComments (PublicationId: number, page: number) {
+  public ReadComments = async (PublicationId: number, page: number) => {
     const comments = await knex('publications_comments')
       .leftJoin('comments_likes', 'comments_likes.comments_id', '=', 'publications_comments.id')
       .join('users', 'users.id', '=', 'publications_comments.user_id')
@@ -52,7 +53,7 @@ class CommentsModel extends SimpleCRUD {
     return allcomments
   }
 
-  public async DeleteCommentary (where: IWhereUserDelete) {
+  public DeleteCommentary = async (where: IWhereUserDelete) => {
     const searchCommentary = await super.ReadWithWhereFirst('publications_comments', where)
 
     const { errorCommentaryNotFound } = new CommentsErros()
@@ -62,6 +63,12 @@ class CommentsModel extends SimpleCRUD {
     await super.Delete('publications_comments', where)
 
     return false
+  }
+
+  public existsComment = async (id: number) => {
+    const comment: IComment = await this.ReadWithWhereFirst({ id })
+
+    return comment
   }
 }
 

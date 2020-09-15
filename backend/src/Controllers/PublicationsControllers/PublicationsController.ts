@@ -67,12 +67,12 @@ class PublicationsController {
   }
 
   private FactoryCreatePublication = (description: string, user_id: number) => {
-    const date = nowDateUTC()
+    const created_at = nowDateUTC()
 
     return {
       photo: 'tempImage.jpg',
       description,
-      date,
+      created_at,
       user_id
     }
   }

@@ -1,11 +1,18 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
 import CommentsErrors from '../../errors/CommentsErrors'
+import PublicationsErrors from '../../errors/PublicationsErrors'
 import CommentsModel from '../../model/CommentsModel/CommentsModel'
+import PublicationsModel from '../../model/PublicationsModel/PublicationsModel'
 
 class CommentsPublicationsController {
-  async index (req: Request, res: Response) {
+  private _commentsModel = new CommentsModel()
+  private _publicationModel = new PublicationsModel()
+
+  private _commentsError = (response: Response) => new CommentsErrors(response)
+  private _publicationError = (response: Response) => new PublicationsErrors(response)
+
+  public index = async (req: Request, res: Response) => {
     const { page } = req.query
     const { PublicationId } = req.params
 
@@ -16,19 +23,19 @@ class CommentsPublicationsController {
     res.json(comments)
   }
 
-  async store (req: Request, res: Response) {
+  public store = async (req: Request, res: Response) => {
     const { userId } = req.userSession
     const { message } = req.body
     const { PublicationId } = req.params
 
-    const { errorMessageNoContent, errorPublicationNotFound, errorInCreateCommentary } = new CommentsErrors()
-    const { ReadWithWhereFirst, CreateCommentary } = new CommentsModel()
+    const commentsError = this._commentsError(res)
+    const publicationError = this._publicationError(res)
 
-    if (String(message).trim() === '') return res.status(errorMessageNoContent.status).json(errorMessageNoContent)
+    if (String(message).trim() === '') return commentsError.messageNoContent()
 
-    const ExistsPublication = await ReadWithWhereFirst('publications', { id: Number(PublicationId) })
+    const existsPublication = await this._publicationModel.existsPublication(Number(PublicationId))
 
-    if (!ExistsPublication) return res.status(errorPublicationNotFound.status).json(errorPublicationNotFound)
+    if (!existsPublication) return publicationError.publicationNotFound()
 
     const data = {
       user_id: Number(userId),
@@ -37,15 +44,15 @@ class CommentsPublicationsController {
     }
 
     try {
-      const comments = await CreateCommentary(data)
+      const id = await this._commentsModel.CreateCommentary(data)
 
-      return res.json(comments)
+      return res.json({ id, ...data })
     } catch (e) {
-      return res.status(errorInCreateCommentary.status).json(errorInCreateCommentary)
+      return commentsError.createCommentary(e.message)
     }
   }
 
-  async destroy (req: Request, res: Response) {
+  public destroy = async (req: Request, res: Response) => {
     const { userId } = req.userSession
     const { CommentId } = req.params
 

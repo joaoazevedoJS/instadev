@@ -4,6 +4,7 @@ import Knex from 'knex'
 export async function up (knex: Knex) {
   return knex.schema.createTable('following', table => {
     table.increments('id').primary()
+    table.date('created_at').notNullable()
 
     table.integer('user_id')
       .notNullable()

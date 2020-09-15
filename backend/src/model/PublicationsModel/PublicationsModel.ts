@@ -18,6 +18,12 @@ class PublicationsModel extends SimpleCRUD {
     return publication
   }
 
+  public existsPublication = async (id: number) => {
+    const publication: IPublications = await this.ReadWithWhereFirst({ id })
+
+    return publication
+  }
+
   public DeleteUserPublication = async (where: IWherePublications) => {
     await this.Delete(where)
   }

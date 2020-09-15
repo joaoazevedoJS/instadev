@@ -7,6 +7,8 @@ import UserModel from '../../model/UsersModel/UserModel'
 import FollowError from '../../errors/FollowError'
 import UserError from '../../errors/UserError'
 
+import nowDateUTC from '../../utils/NowDateUTC'
+
 class FollowController {
   private _searchFollowModel = (id: number, order: string, page: number) => new SearchFollowModel(id, order, page)
   private _followModel = new FollowModel()
@@ -45,7 +47,7 @@ class FollowController {
 
     if (userId === following_id) return followError.cantFollow()
 
-    const data = { user_id: userId, following_id }
+    const data = { user_id: userId, following_id, created_at: nowDateUTC() }
 
     const isFollowing = await this._followModel.isFollow(data)
 

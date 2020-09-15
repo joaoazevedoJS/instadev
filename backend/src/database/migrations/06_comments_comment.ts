@@ -14,6 +14,8 @@ export async function up (knex: Knex) {
     table.integer('comment_id')
       .notNullable()
       .references('id').inTable('publications_comments')
+
+    table.date('created_at').notNullable()
   })
 }
 

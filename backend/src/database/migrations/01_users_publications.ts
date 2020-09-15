@@ -7,7 +7,7 @@ export async function up (knex: Knex) {
     table.string('photo').notNullable()
     table.string('description')
     table.integer('views')
-    table.date('date').notNullable()
+    table.date('created_at').notNullable()
 
     table.integer('user_id').notNullable()
       .references('id').inTable('users')

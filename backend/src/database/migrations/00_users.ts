@@ -14,6 +14,7 @@ export async function up (knex: Knex) {
     table.integer('limit_resend')
     table.date('limit_date_resend')
     table.boolean('privateAccount').notNullable()
+    table.date('created_at').notNullable()
   })
 }
 
