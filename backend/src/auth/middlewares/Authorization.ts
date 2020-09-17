@@ -31,7 +31,7 @@ class Authorization {
 
       const userId = decoded.id
 
-      const user = await this._model.ReadWithWhereFirst({ id: userId })
+      const user = await this._model.GetAccount(userId)
 
       if (!user) return userError.userNotFound()
 

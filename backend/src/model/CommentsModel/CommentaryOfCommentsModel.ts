@@ -1,29 +1,24 @@
 import SimpleCRUD from '../SimpleCRUD'
 
-import CommentsErros from '../../errors/CommentsErrors'
-
-// eslint-disable-next-line no-unused-vars
-import { IWhereUserDelete } from '../../interfaces/IUser'
+import { ICreateCommentaryOfComments, ICommentWhere, ICommentaryOfComments } from '../../interfaces/IComments'
 
 class CommentsOfCommentaryModel extends SimpleCRUD {
   constructor () { super('comments_comment') }
 
-  public async CreateCommentary (data: any) {
-    const createData = await super.Create(data)
+  public CreateCommentary = async (data: ICreateCommentaryOfComments) => {
+    const createData = await this.Create(data)
 
-    return createData
+    return createData[0]
   }
 
-  public async DeleteCommentary (where: IWhereUserDelete) {
-    const searchCommentary = await super.ReadWithWhereFirst('comments_comment', where)
+  public existsCommentary = async (id: number) => {
+    const existsCommentary: ICommentaryOfComments = await this.ReadWithWhereFirst({ id })
 
-    const { errorCommentaryNotFound } = new CommentsErros()
+    return existsCommentary
+  }
 
-    if (!searchCommentary) return errorCommentaryNotFound
-
-    await super.Delete('comments_comment', where)
-
-    return false
+  public DeleteCommentary = async (where: ICommentWhere) => {
+    await this.Delete(where)
   }
 }
 

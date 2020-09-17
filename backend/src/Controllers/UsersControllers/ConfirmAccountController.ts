@@ -17,7 +17,7 @@ class ConfirmAccountController {
     const userError = this._userError(res)
     const mailError = this._mailError(res)
 
-    const account = await this._model.GetAccount(userId)
+    const account = await this._model.GetConfirmAccount(userId)
 
     if (code !== account.code) return userError.codeNotExists()
 

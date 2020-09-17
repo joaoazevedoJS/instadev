@@ -39,11 +39,11 @@ class FollowController {
 
     const following_id = Number(followId)
 
-    const existsUser = await this._userModel.ReadWithWhereFirst({ id: following_id })
+    if (isNaN(following_id)) return userError.invalidUserId()
+
+    const existsUser = await this._userModel.GetAccount(following_id)
 
     if (!existsUser) return userError.userNotFound()
-
-    if (isNaN(following_id)) return userError.invalidUserId()
 
     if (userId === following_id) return followError.cantFollow()
 
@@ -71,11 +71,11 @@ class FollowController {
 
     const following_id = Number(followId)
 
-    const existsUser = await this._userModel.ReadWithWhereFirst({ id: following_id })
+    if (isNaN(following_id)) return userError.invalidUserId()
+
+    const existsUser = await this._userModel.GetAccount(following_id)
 
     if (!existsUser) return userError.userNotFound()
-
-    if (isNaN(following_id)) return userError.invalidUserId()
 
     if (userId === following_id) return followError.cantUnFollow()
 

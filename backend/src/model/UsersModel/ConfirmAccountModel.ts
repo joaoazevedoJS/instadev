@@ -5,7 +5,7 @@ import { IUserReturnConfirmAccount, IUserUpdateConfirmAccount } from '../../inte
 class ConfirmAccountModel extends SimpleCRUD {
   constructor () { super('users') }
 
-  public GetAccount = async (id: number) => {
+  public GetConfirmAccount = async (id: number) => {
     const select = ['accountCode as code', 'confirmAccount as confirm_account']
 
     const user: IUserReturnConfirmAccount = await this.ReadReturnSelectWithWhereFirst(select, { id })

@@ -2,8 +2,11 @@
 import { Request, Response } from 'express'
 
 import CommentsErrors from '../../errors/CommentsErrors'
+
 import CommentsModel from '../../model/CommentsModel/CommentsModel'
 import CommentaryOfCommentsModel from '../../model/CommentsModel/CommentaryOfCommentsModel'
+
+import nowDateUTC from '../../utils/NowDateUTC'
 
 class CommentaryOfCommentsController {
   private _commentaryCommentsModel = new CommentaryOfCommentsModel()
@@ -17,20 +20,16 @@ class CommentaryOfCommentsController {
 
     const error = this._error(res)
 
-    const existsComment = await this._commentsModel.existsComment(userId)
+    const existsComment = await this._commentsModel.existsComment(Number(CommentId))
 
     if (!existsComment) return error.commentaryNotFound()
 
-    const data = {
-      message,
-      user_id: Number(userId),
-      comment_id: Number(CommentId)
-    }
+    const data = this.factoryMessage(Number(userId), String(message), Number(CommentId))
 
     try {
-      const comments = await CreateCommentary(data)
+      const id = await this._commentaryCommentsModel.CreateCommentary(data)
 
-      return res.json(comments)
+      return res.json({ id, ...data })
     } catch (e) {
       return error.deleteCommentary(e.message)
     }
@@ -40,24 +39,32 @@ class CommentaryOfCommentsController {
     const { userId } = req.userSession
     const { CommentFromCommentsId } = req.params
 
-    const { DeleteCommentary } = new CommentsOfCommentaryModel()
+    const error = this._error(res)
 
     const where = {
       id: Number(CommentFromCommentsId),
       user_id: Number(userId)
     }
 
-    try {
-      const deleteCommentary: any = await DeleteCommentary(where)
+    const existsCommentary = await this._commentaryCommentsModel.existsCommentary(where.id)
 
-      if (deleteCommentary.status) return res.status(deleteCommentary.status).json(deleteCommentary)
+    if (!existsCommentary) return error.commentaryNotFound()
+
+    if (existsCommentary.user_id !== userId) return error.dontAuthorization()
+
+    try {
+      await this._commentaryCommentsModel.DeleteCommentary(where)
 
       res.send('')
     } catch (e) {
-      const { errorInDeleteCommentary } = new CommentsErrors()
-
-      return res.status(errorInDeleteCommentary.status).json(errorInDeleteCommentary)
+      return error.deleteCommentary(e.message)
     }
+  }
+
+  private factoryMessage = (user_id: number, message: string, comment_id: number) => {
+    const created_at = nowDateUTC()
+
+    return { user_id, message, comment_id, created_at }
   }
 }
 

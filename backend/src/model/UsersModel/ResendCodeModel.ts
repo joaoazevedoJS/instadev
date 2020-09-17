@@ -2,7 +2,6 @@ import SimpleCRUD from '../SimpleCRUD'
 import nowDateUTC from '../../utils/NowDateUTC'
 
 import {
-  IUser,
   IUserLimitResend,
   IUserUpdateLimiteData
 } from '../../interfaces/IUser'
@@ -11,14 +10,6 @@ class ResendCodeModel extends SimpleCRUD {
   constructor (private id: number) {
     super('users')
   }
-
-  public GetAccount = async () => {
-    const user: IUser = await this.ReadWithWhereFirst({ id: this.id })
-
-    user.password = undefined
-
-    return user
-  };
 
   public UpdateLimiteResend = async (limit_resend: number) => {
     const data: IUserLimitResend = { limit_resend }
