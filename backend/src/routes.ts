@@ -109,7 +109,7 @@ routes.post(
   LikesPublications.store
 )
 routes.delete(
-  '/user/action/like/publication/:LikeId',
+  '/user/action/like/publication/:PublicationId',
   IsMailVerified.show,
   LikesPublications.destroy
 )

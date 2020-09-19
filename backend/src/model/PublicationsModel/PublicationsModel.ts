@@ -1,4 +1,5 @@
 import knex from '../../database/connection'
+
 import { ICreatePublication, IPublications, IWherePublications } from '../../interfaces/IPublications'
 
 import SimpleCRUD from '../SimpleCRUD'

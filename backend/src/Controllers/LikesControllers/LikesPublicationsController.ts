@@ -1,67 +1,83 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 
-import knex from '../../database/connection'
+import LikesPublicationsModel from '../../model/LikesModel/LikesPublicationsModel'
+import PublicationsModel from '../../model/PublicationsModel/PublicationsModel'
+
+import LikeError from '../../errors/LikeError'
+import PublicationsErrors from '../../errors/PublicationsErrors'
+
+import nowDateUTC from '../../utils/NowDateUTC'
 
 class LikesPublicationsController {
-  async index (req: Request, res: Response) {
+  private _likeModel = new LikesPublicationsModel()
+  private _publicationModel = new PublicationsModel()
+  private _likeError = (res: Response) => new LikeError(res)
+  private _publicationError = (res: Response) => new PublicationsErrors(res)
+
+  public index = async (req: Request, res: Response) => {
     const { PublicationId } = req.params
 
-    const likes = await knex('publications_likes')
-      .where('publication_id', PublicationId)
+    const likes = await this._likeModel.getPublicationLikes(Number(PublicationId))
 
     return res.json(likes)
   }
 
-  async store (req: Request, res: Response) {
+  public store = async (req: Request, res: Response) => {
     const { userId } = req.userSession
     const { PublicationId } = req.params
 
+    const likeError = this._likeError(res)
+    const publicationError = this._publicationError(res)
+
+    const where = this.factoryWhereLike(userId, Number(PublicationId))
+
     const data = {
-      user_id: Number(userId),
-      publication_id: Number(PublicationId)
+      ...where,
+      created_at: nowDateUTC()
     }
 
-    const AlreadyLiked = await knex('publications_likes')
-      .where(data).first()
+    const alreadyLiked = await this._likeModel.getLike(where)
 
-    if (AlreadyLiked) return res.status(401).json({ error: 'you can\'t liked again' })
+    if (alreadyLiked) return likeError.alreadyLiked()
 
-    const ExistsPublication = await knex('publications')
-      .where('id', Number(PublicationId)).first()
+    const existsPublication = await this._publicationModel.existsPublication(Number(PublicationId))
 
-    if (!ExistsPublication) return res.status(404).json({ error: 'Publication not Found' })
+    if (!existsPublication) return publicationError.publicationNotFound()
 
     try {
-      const [id] = await knex('publications_likes').insert(data)
+      const id = await this._likeModel.CreatePublicationLike(data)
 
       return res.json({ id, ...data })
     } catch (e) {
-      return res.status(500).json({ error: 'Error, Try again' })
+      return likeError.createNewLike(e.message)
     }
   }
 
-  async destroy (req: Request, res: Response) {
+  public destroy = async (req: Request, res: Response) => {
     const { userId } = req.userSession
-    const { LikeId } = req.params
+    const { PublicationId } = req.params
 
-    const data = {
-      id: LikeId,
-      user_id: userId
-    }
+    const likeError = this._likeError(res)
 
-    const userLiked = await knex('publications_likes')
-      .where(data).first()
+    const where = this.factoryWhereLike(userId, Number(PublicationId))
 
-    if (!userLiked) return res.status(401).json({ error: 'Only users who liked can dislike' })
+    const userLiked = await this._likeModel.getLike(where)
+
+    if (!userLiked) return likeError.dontAuthorization()
 
     try {
-      await knex('publications_likes')
-        .where('id', LikeId).first().delete()
+      await this._likeModel.deletePublicationLike(where)
 
       return res.send('')
     } catch (e) {
-      return res.status(500).json({ error: 'Error, Try again' })
+      return likeError.deleteLike(e.message)
+    }
+  }
+
+  private factoryWhereLike = (user_id: number, publication_id: number) => {
+    return {
+      user_id,
+      publication_id
     }
   }
 }
