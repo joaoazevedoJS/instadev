@@ -48,19 +48,19 @@ class CommentsModel extends SimpleCRUD {
   }
 
   private joinCommentaryWithComments = async (comment: ISearchComments) => {
-    const commentaryOfComments: Array<ICommentaryWithComments> = await knex('comments_comment')
-      .leftJoin('comments_comment_likes', 'comments_comment_likes.comments_comment_id', '=', 'comments_comment.id')
-      .join('users', 'users.id', '=', 'comments_comment.user_id')
-      .where('comments_comment.comment_id', comment.id)
+    const commentaryOfComments: Array<ICommentaryWithComments> = await knex('commentary_comments')
+      .leftJoin('commentary_comments_likes', 'commentary_comments_likes.commentary_comments_id', '=', 'commentary_comments.id')
+      .join('users', 'users.id', '=', 'commentary_comments.user_id')
+      .where('commentary_comments.comment_id', comment.id)
       .select([
-        'comments_comment.id',
+        'commentary_comments.id',
         'users.user_name',
         'users.id as user_id',
-        'comments_comment.message',
-        'comments_comment.created_at'
+        'commentary_comments.message',
+        'commentary_comments.created_at'
       ])
-      .groupBy('comments_comment.id')
-      .count('comments_comment_likes.comments_comment_id as likes')
+      .groupBy('commentary_comments.id')
+      .count('commentary_comments_likes.commentary_comments_id as likes')
 
     const commentary = {
       comment: { ...comment },

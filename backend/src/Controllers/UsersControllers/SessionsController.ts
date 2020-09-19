@@ -14,6 +14,7 @@ import UserError from '../../errors/UserError'
 class SessionsController {
   private _mails = new Mails()
   private _model = new SessionsModel()
+
   private _error = (response: Response) => new UserError(response)
 
   public signup = async (req: Request, res: Response) => {
@@ -78,4 +79,4 @@ class SessionsController {
   }
 }
 
-export default SessionsController
+export default new SessionsController()

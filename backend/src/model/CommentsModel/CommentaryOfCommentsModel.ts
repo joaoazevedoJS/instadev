@@ -2,8 +2,8 @@ import SimpleCRUD from '../SimpleCRUD'
 
 import { ICreateCommentaryOfComments, ICommentWhere, ICommentaryOfComments } from '../../interfaces/IComments'
 
-class CommentsOfCommentaryModel extends SimpleCRUD {
-  constructor () { super('comments_comment') }
+class CommentaryOfCommentsModel extends SimpleCRUD {
+  constructor () { super('commentary_comments') }
 
   public CreateCommentary = async (data: ICreateCommentaryOfComments) => {
     const createData = await this.Create(data)
@@ -22,4 +22,4 @@ class CommentsOfCommentaryModel extends SimpleCRUD {
   }
 }
 
-export default CommentsOfCommentaryModel
+export default CommentaryOfCommentsModel

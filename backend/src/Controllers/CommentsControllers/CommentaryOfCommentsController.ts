@@ -11,20 +11,21 @@ import nowDateUTC from '../../utils/NowDateUTC'
 class CommentaryOfCommentsController {
   private _commentaryCommentsModel = new CommentaryOfCommentsModel()
   private _commentsModel = new CommentsModel()
+
   private _error = (response: Response) => new CommentsErrors(response)
 
   public store = async (req: Request, res: Response) => {
     const { userId } = req.userSession
     const { message } = req.body
-    const { CommentId } = req.params
+    const { commentId } = req.params
 
     const error = this._error(res)
 
-    const existsComment = await this._commentsModel.existsComment(Number(CommentId))
+    const existsComment = await this._commentsModel.existsComment(Number(commentId))
 
     if (!existsComment) return error.commentaryNotFound()
 
-    const data = this.factoryMessage(Number(userId), String(message), Number(CommentId))
+    const data = this.factoryMessage(Number(userId), String(message), Number(commentId))
 
     try {
       const id = await this._commentaryCommentsModel.CreateCommentary(data)
@@ -37,12 +38,12 @@ class CommentaryOfCommentsController {
 
   public destroy = async (req: Request, res: Response) => {
     const { userId } = req.userSession
-    const { CommentFromCommentsId } = req.params
+    const { commentaryId } = req.params
 
     const error = this._error(res)
 
     const where = {
-      id: Number(CommentFromCommentsId),
+      id: Number(commentaryId),
       user_id: Number(userId)
     }
 

@@ -8,6 +8,7 @@ import SearchPublicationsModel from '../../model/PublicationsModel/SearchPublica
 
 class PublicationsController {
   private _model = new PublicationsModel()
+
   private _searchPublicationModel = (page: number, order?: string) => new SearchPublicationsModel(page, order)
   private _error = (response: Response) => new PublicationsErrors(response)
 
@@ -41,11 +42,11 @@ class PublicationsController {
 
   public destroy = async (req: Request, res: Response) => {
     const { userId } = req.userSession
-    const { PublicationId } = req.params
+    const { publicationId } = req.params
 
     const error = this._error(res)
 
-    const where = { id: Number(PublicationId), user_id: Number(userId) }
+    const where = { id: Number(publicationId), user_id: Number(userId) }
 
     const publication = await this._model.SearchPublication(where)
 

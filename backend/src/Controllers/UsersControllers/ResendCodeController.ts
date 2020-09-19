@@ -12,7 +12,9 @@ import { IUser } from '../../interfaces/IUser'
 class ResendCodeController {
   private _resendModel = (id: number) => new ResendCodeModel(id)
   private _userModel = new UserModel()
+
   private _error = (response: Response) => new MailError(response)
+
   private _mails = new Mails()
 
   public store = async (req: Request, res: Response) => {

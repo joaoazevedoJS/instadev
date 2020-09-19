@@ -7,6 +7,7 @@ import MailError from '../../errors/MailError'
 
 class ConfirmAccountController {
   private _model = new ConfirmAccountModel()
+
   private _userError = (response: Response) => new UserError(response)
   private _mailError = (response: Response) => new MailError(response)
 

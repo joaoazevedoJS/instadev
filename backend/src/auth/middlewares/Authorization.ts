@@ -40,6 +40,11 @@ class Authorization {
       return next()
     })
   }
+
+  public authenticated = (req: Request, res: Response) => {
+    // if token is true
+    res.send('')
+  }
 }
 
 export default new Authorization()

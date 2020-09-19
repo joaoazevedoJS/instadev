@@ -7,6 +7,7 @@ import checkPartsAndReturnName from '../../utils/checkPartsAndReturnName'
 
 class VerifyAccountController {
   private _model = new UserModel()
+
   private _error = (response: Response) => new UserError(response)
 
   public verifyEmail = async (req: Request, res: Response) => {

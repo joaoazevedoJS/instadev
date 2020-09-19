@@ -16,7 +16,6 @@
     "paths": {
       "@PublicationsControllers/*": ["./src/Controllers/PublicationsControllers/*"],
       "@UsersControllers/*": ["./src/Controllers/UsersControllers/*"],
-      "@WebControllers/*":  ["./src/Controllers/WebControllers/*"],
       "@CommentsControllers/*":  ["./src/Controllers/CommentsControllers/*"],
       "@LikesControllers/*":  ["./src/Controllers/LikesControllers/*"]
     },

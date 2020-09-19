@@ -2,7 +2,7 @@
 import Knex from 'knex'
 
 export async function up (knex: Knex) {
-  return knex.schema.createTable('comments_comment', table => {
+  return knex.schema.createTable('commentary_comments', table => {
     table.increments('id').primary()
 
     table.string('message').notNullable()
@@ -20,5 +20,5 @@ export async function up (knex: Knex) {
 }
 
 export async function down (knex: Knex) {
-  return knex.schema.dropTable('comments_comment')
+  return knex.schema.dropTable('commentary_comments')
 }

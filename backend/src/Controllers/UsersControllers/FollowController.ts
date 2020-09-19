@@ -10,9 +10,10 @@ import UserError from '../../errors/UserError'
 import nowDateUTC from '../../utils/NowDateUTC'
 
 class FollowController {
-  private _searchFollowModel = (id: number, order: string, page: number) => new SearchFollowModel(id, order, page)
   private _followModel = new FollowModel()
   private _userModel = new UserModel()
+
+  private _searchFollowModel = (id: number, order: string, page: number) => new SearchFollowModel(id, order, page)
 
   private _followError = (response: Response) => new FollowError(response)
   private _userError = (response: Response) => new UserError(response)
@@ -37,26 +38,25 @@ class FollowController {
     const userError = this._userError(res)
     const followError = this._followError(res)
 
-    const following_id = Number(followId)
+    const where = this.factoryWhere(userId, Number(followId))
+    const data = { ...where, created_at: nowDateUTC() }
 
-    if (isNaN(following_id)) return userError.invalidUserId()
+    if (isNaN(where.following_id)) return userError.invalidUserId()
 
-    const existsUser = await this._userModel.GetAccount(following_id)
+    const existsUser = await this._userModel.GetAccount(where.following_id)
 
     if (!existsUser) return userError.userNotFound()
 
-    if (userId === following_id) return followError.cantFollow()
+    if (userId === where.following_id) return followError.cantFollow()
 
-    const data = { user_id: userId, following_id, created_at: nowDateUTC() }
-
-    const isFollowing = await this._followModel.isFollow(data)
+    const isFollowing = await this._followModel.isFollow(where)
 
     if (isFollowing) return followError.cantFollowAgain()
 
     try {
-      const following = await this._followModel.createFollow(data)
+      const id = await this._followModel.createFollow(data)
 
-      return res.json(following)
+      return res.json({ id, ...data })
     } catch (e) {
       return followError.createNewFollow(e.message)
     }
@@ -69,17 +69,19 @@ class FollowController {
     const userError = this._userError(res)
     const followError = this._followError(res)
 
-    const following_id = Number(followId)
+    const where = this.factoryWhere(userId, Number(followId))
 
-    if (isNaN(following_id)) return userError.invalidUserId()
+    if (isNaN(where.following_id)) return userError.invalidUserId()
 
-    const existsUser = await this._userModel.GetAccount(following_id)
+    const existsUser = await this._userModel.GetAccount(where.following_id)
 
     if (!existsUser) return userError.userNotFound()
 
-    if (userId === following_id) return followError.cantUnFollow()
+    if (userId === where.following_id) return followError.cantUnFollow()
 
-    const where = { user_id: userId, following_id }
+    const isFollowing = await this._followModel.isFollow(where)
+
+    if (!isFollowing) return followError.dontAuthorization()
 
     try {
       await this._followModel.deleteFollow(where)
@@ -88,6 +90,10 @@ class FollowController {
     } catch (e) {
       return followError.deleteFollow(e.message)
     }
+  }
+
+  private factoryWhere = (user_id: number, following_id: number) => {
+    return { user_id, following_id }
   }
 }
 

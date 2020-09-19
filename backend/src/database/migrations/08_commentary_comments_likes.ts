@@ -2,13 +2,13 @@
 import Knex from 'knex'
 
 export async function up (knex: Knex) {
-  return knex.schema.createTable('comments_comment_likes', table => {
+  return knex.schema.createTable('commentary_comments_likes', table => {
     table.increments('id').primary()
     table.date('created_at').notNullable()
 
-    table.integer('comments_comment_id')
+    table.integer('commentary_comments_id')
       .notNullable()
-      .references('id').inTable('comments_comment')
+      .references('id').inTable('commentary_comments')
 
     table.integer('user_id')
       .notNullable()
@@ -17,5 +17,5 @@ export async function up (knex: Knex) {
 }
 
 export async function down (knex: Knex) {
-  return knex.schema.dropTable('comments_comment_likes')
+  return knex.schema.dropTable('commentary_comments_likes')
 }

@@ -16,11 +16,9 @@ class FollowModel extends SimpleCRUD {
   }
 
   public createFollow = async (data: IFollow) => {
-    await this.Create(data)
+    const createFollow = await this.Create(data)
 
-    const follow: IFollow = await this.isFollow(data)
-
-    return follow
+    return createFollow[0]
   }
 
   public deleteFollow = async (where: IFollow): Promise<void> => {

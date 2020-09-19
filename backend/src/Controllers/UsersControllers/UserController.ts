@@ -5,6 +5,7 @@ import UserError from '../../errors/UserError'
 
 class UserController {
   private _model = new UserModel()
+
   private _error = (response: Response) => new UserError(response)
 
   public show = async (req: Request, res: Response) => {
