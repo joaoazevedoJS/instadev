@@ -2,7 +2,10 @@ import SimpleCRUD from '../SimpleCRUD'
 
 import { ICreateCommentaryOfComments, ICommentWhere, ICommentaryOfComments } from '../../interfaces/IComments'
 
+import LikesCommentaryOfCommentsModel from '../LikesModel/LikesCommentaryOfCommentsModel'
+
 class CommentaryOfCommentsModel extends SimpleCRUD {
+  private _likes = new LikesCommentaryOfCommentsModel()
   constructor () { super('commentary_comments') }
 
   public CreateCommentary = async (data: ICreateCommentaryOfComments) => {
@@ -18,6 +21,7 @@ class CommentaryOfCommentsModel extends SimpleCRUD {
   }
 
   public DeleteCommentary = async (where: ICommentWhere) => {
+    this._likes.Delete({ commentary_comments_id: where.id })
     await this.Delete(where)
   }
 }

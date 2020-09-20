@@ -3,8 +3,11 @@ import knex from '../../database/connection'
 import { ICreatePublication, IPublications, IWherePublications } from '../../interfaces/IPublications'
 
 import SimpleCRUD from '../SimpleCRUD'
+import DeletePublicationsModel from './DeletePublicationsModel'
 
 class PublicationsModel extends SimpleCRUD {
+  private _deletePublicationsModel = new DeletePublicationsModel()
+
   constructor () { super('publications') }
 
   public CreateUserPublication = async (data: ICreatePublication) => {
@@ -26,7 +29,7 @@ class PublicationsModel extends SimpleCRUD {
   }
 
   public DeleteUserPublication = async (where: IWherePublications) => {
-    await this.Delete(where)
+    await this._deletePublicationsModel.DeleteUserPublication(where)
   }
 }
 
