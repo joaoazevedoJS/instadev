@@ -75,6 +75,12 @@ routes.delete(
   PublicationsController.destroy
 )
 
+routes.put(
+  '/user/action/publications/:publicationId',
+  IsMailVerified.show,
+  PublicationsController.update
+)
+
 routes.post(
   '/user/action/comments/:publicationId',
   IsMailVerified.show,

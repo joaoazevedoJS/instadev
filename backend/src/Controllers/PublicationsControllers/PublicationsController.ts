@@ -63,8 +63,29 @@ class PublicationsController {
 
   public update = async (req: Request, res: Response) => {
     const { userId } = req.userSession
+    const { publicationId } = req.params
+    const { photo, description } = req.body
 
-    return res.json({ message: 'Hello World!', userId })
+    const error = this._error(res)
+
+    const where = {
+      user_id: userId,
+      id: Number(publicationId)
+    }
+
+    const existsPublication = await this._model.SearchPublication(where)
+
+    if (!existsPublication) return error.publicationNotFound()
+
+    const data = { photo, description }
+
+    try {
+      await this._model.UpdateUserPublication(data, where)
+
+      return res.send()
+    } catch (e) {
+      return error.updatePublication(e.message)
+    }
   }
 
   private FactoryCreatePublication = (description: string, user_id: number) => {

@@ -15,9 +15,13 @@ class PublicationsError extends Errors {
   private _errorInDeletePublication = (catchMsg: string) =>
     this.FactoryErrors(400, 'Unexpected error while delete publication', catchMsg)
 
+  private _errorUpdatePublication = (catchMsg: string) =>
+    this.FactoryErrors(400, 'Unexpected error while update publication, try again!', catchMsg)
+
   public publicationNotFound = () => this.ResponseError(this._errorPublicationNotFound)
   public createPublication = (catchMsg: string) => this.ResponseError(this._errorInCreatePublication(catchMsg))
   public deletePublication = (catchMsg: string) => this.ResponseError(this._errorInDeletePublication(catchMsg))
+  public updatePublication = (catchMsg: string) => this.ResponseError(this._errorUpdatePublication(catchMsg))
 }
 
 export default PublicationsError

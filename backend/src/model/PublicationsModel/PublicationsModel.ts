@@ -31,6 +31,10 @@ class PublicationsModel extends SimpleCRUD {
   public DeleteUserPublication = async (where: IWherePublications) => {
     await this._deletePublicationsModel.DeleteUserPublication(where)
   }
+
+  public UpdateUserPublication = async (data: object, where: IWherePublications) => {
+    await this.Update(data, where)
+  }
 }
 
 export default PublicationsModel
