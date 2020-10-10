@@ -18,7 +18,7 @@ import CommentsPublicationsController from '@CommentsControllers/CommentsPublica
 import CommentaryOfCommentsController from '@CommentsControllers/CommentaryOfCommentsController'
 
 import Authorization from './auth/middlewares/Authorization'
-import IsMailVerified from './middlewares/IsMailVerified'
+import IsMailVerified from './middlewares/isMailVerified'
 import URLDashboard from './middlewares/URLDashboard'
 
 const routes = Router()

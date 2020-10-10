@@ -1,4 +1,4 @@
-import Mailer from './Mailer'
+import Mailer from './mailer'
 import { IMailProps } from '../interfaces/IMailer'
 
 class Mail extends Mailer {
