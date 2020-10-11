@@ -1,26 +1,25 @@
 import React, { FC, ReactNode } from "react";
+import { Link } from 'react-router-dom'
+
+import Logo from "../../assets/img/instadev.svg";
 
 import "./styles.css";
 
 interface Props {
   redirectTo: {
+    text: string;
+    to: string;
     description: string;
-    linkText: string;
-    link: string;
   };
   children: ReactNode;
 }
 
 const SignContainer: FC<Props> = ({ redirectTo, children }) => {
   return (
-    <>
-      <div id="SignContainer">
+    <div className="SignContainerComponent">
+      <div className="container">
         <h1>
-          <img
-            className="logo"
-            src="http://files.joaoazevedojs.com.br/instadev/logo.svg"
-            alt="instadev"
-          />
+          <img className="logo" src={Logo} alt="instadev" />
         </h1>
 
         {children}
@@ -28,11 +27,11 @@ const SignContainer: FC<Props> = ({ redirectTo, children }) => {
 
       <div className="redirectTo">
         <p>
-          {redirectTo.description}{" "}
-          <a href={redirectTo.link}>{redirectTo.linkText}</a>
+          {redirectTo.text}{" "}
+          <Link to={redirectTo.to}>{redirectTo.description}</Link>
         </p>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -8,7 +8,7 @@ import "./styles.css";
 const Login = () => {
   return (
     <SignContainer
-      redirectTo={{ description: "Don't have an account?", link: "/signup", linkText: "Sign up" }}
+      redirectTo={{ text: "Don't have an account?", to: "/signup", description: "Sign up" }}
       children={<LoginComponent />}
     />
   );
