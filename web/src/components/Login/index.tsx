@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import Button from "../Button";
+import { Link } from "react-router-dom";
+import { AiFillFacebook } from "react-icons/ai";
 
+import Button from "../Button";
 import Input from "../Input";
+import Or from "../Or";
 
 import "./styles.css";
 
@@ -17,7 +20,7 @@ const Login = () => {
         onChange={(e) => setEmail(e.target.value)}
         value={email}
       />
-      
+
       <Input
         label="Password"
         type="password"
@@ -25,14 +28,19 @@ const Login = () => {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
-      
+
       <Button>Log In</Button>
 
-      <p className="line">OR</p>
+      <Or />
 
-      <p className="facebookLogin">Log In With Facebook</p>
+      <p className="facebookLogin">
+        <AiFillFacebook />
+        Log In With Facebook
+      </p>
 
-      <p className="forgot">Forgot Password?</p>
+      <Link to="/" className="forgot">
+        Forgot Password?
+      </Link>
     </div>
   );
 };

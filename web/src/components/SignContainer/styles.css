@@ -2,7 +2,7 @@
   min-height: 100vh;
   max-width: 350px;
   margin: 0 auto;
-  
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -29,4 +29,27 @@
   text-decoration: none;
   color: #0095f6;
   font-weight: bold;
+}
+
+.SignContainerComponent .GetApp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.SignContainerComponent .GetApp p {
+  margin: 24px;
+  font-size: 14px;
+}
+
+.SignContainerComponent .GetApp div.store {
+  height: 40px;
+}
+
+.SignContainerComponent .GetApp div.store a:first-child {
+  margin-right: 8px;
+}
+
+.SignContainerComponent .GetApp div.store img {
+  height: 100%;
 }
