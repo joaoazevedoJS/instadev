@@ -6,11 +6,19 @@ import Button from "../Button";
 import Input from "../Input";
 import Or from "../Or";
 
+import { setToken } from "../../auth/token";
+
 import "./styles.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  function handleLogin() { 
+    setToken('ashuiahOEFUASOEHFWOUJ')
+
+    window.location.reload()
+  }
 
   return (
     <div className="loginComponent">
@@ -29,7 +37,7 @@ const Login = () => {
         value={password}
       />
 
-      <Button>Log In</Button>
+      <Button onClick={handleLogin}>Log In</Button>
 
       <Or />
 

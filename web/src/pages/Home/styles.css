@@ -1,0 +1,32 @@
+.home-page header {
+  width: 100%;
+  height: 54px;
+  border-bottom: 1px solid #dbdbdb;
+
+  display: flex;
+  align-items: center;
+}
+
+.home-page header div.content {
+  max-width: 975px;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-page header div.content img.logo {
+  height: 29px;
+}
+
+.home-page header div.content div.user_operations img {
+  height: 24px;
+}
+
+main {
+  margin-bottom: 2000px;
+}
