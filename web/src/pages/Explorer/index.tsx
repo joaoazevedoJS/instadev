@@ -15,7 +15,7 @@ function Home() {
 
   return (
     <div className="home-page">
-      <Header selectIcon='home' />
+      <Header selectIcon='explore' />
 
       <main>a</main>
     </div>
