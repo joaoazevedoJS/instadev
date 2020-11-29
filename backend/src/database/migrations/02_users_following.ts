@@ -1,21 +1,20 @@
-// eslint-disable-next-line no-unused-vars
-import Knex from 'knex'
+import Knex, { SchemaBuilder } from 'knex';
 
-export async function up (knex: Knex) {
+export async function up(knex: Knex): Promise<SchemaBuilder> {
   return knex.schema.createTable('following', table => {
-    table.increments('id').primary()
-    table.date('created_at').notNullable()
+    table.increments('id').primary();
+    table.date('created_at').notNullable();
 
-    table.integer('user_id')
-      .notNullable()
-      .references('id').inTable('users')
+    table.integer('user_id').notNullable().references('id').inTable('users');
 
-    table.integer('following_id')
+    table
+      .integer('following_id')
       .notNullable()
-      .references('id').inTable('users')
-  })
+      .references('id')
+      .inTable('users');
+  });
 }
 
-export async function down (knex: Knex) {
-  return knex.schema.dropTable('following')
+export async function down(knex: Knex): Promise<SchemaBuilder> {
+  return knex.schema.dropTable('following');
 }
