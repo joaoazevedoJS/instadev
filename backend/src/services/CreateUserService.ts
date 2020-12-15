@@ -1,6 +1,10 @@
-import Email from '../models/Email';
-import Password from '../models/Password';
-import Users from '../models/Users';
+import { getCustomRepository } from 'typeorm';
+
+import randomCode from '../utils/randomCode';
+
+import Email from '../models/utils/Email';
+import Password from '../models/utils/Password';
+import Users from '../models/entities/Users';
 
 import UsersRepositories from '../repositories/UsersRepositories';
 
@@ -12,38 +16,40 @@ interface Request {
 }
 
 class CreateUserService {
-  private usersRepositories: UsersRepositories;
-
-  constructor(usersRepositories: UsersRepositories) {
-    this.usersRepositories = usersRepositories;
-  }
-
   public execute = async ({
     name,
-    mail,
+    mail: { email },
     password,
     user_name,
   }: Request): Promise<Users> => {
-    const mailAlreadyCreated = await this.usersRepositories.mailAlreadyExist(
-      mail.email,
-    );
+    const usersRepositories = getCustomRepository(UsersRepositories);
+
+    const mailAlreadyCreated = await usersRepositories.findOne({
+      where: { email },
+    });
 
     if (mailAlreadyCreated) throw new Error('E-mail already exist!');
 
-    const userNameAlreadyCreated = await this.usersRepositories.userNameAlreadyExist(
-      user_name,
-    );
+    const userNameAlreadyCreated = await usersRepositories.findOne({
+      where: { user_name },
+    });
 
     if (userNameAlreadyCreated) throw new Error('user name already exist!');
 
     const passwordEnCripyted = await password.cryptPassword();
 
-    const user = await this.usersRepositories.create({
-      email: mail.email,
+    const user = usersRepositories.create({
+      email,
       password: passwordEnCripyted,
       user_name,
       name,
+      user_avatar: 'default',
+      verification_code: randomCode(6),
     });
+
+    await usersRepositories.save(user);
+
+    user.password = undefined;
 
     return user;
   };

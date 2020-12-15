@@ -18,13 +18,15 @@ class AcessAccountService {
   public execute = async ({ email, password }: Request): Promise<string> => {
     const user = await this.usersRepositories.getUserByMail(email);
 
-    if (!user) throw new Error('User not found!');
+    if (!user) {
+      throw new Error('Incorrect email/password combination');
+    }
 
     const passwordIsEquals = await bcrypt.compare(password, user.password);
 
-    if (!passwordIsEquals) throw new Error('Password not valid!');
-
-    user.password = undefined;
+    if (!passwordIsEquals) {
+      throw new Error('Incorrect email/password combination');
+    }
 
     const token = GenerateToken(user.id);
 

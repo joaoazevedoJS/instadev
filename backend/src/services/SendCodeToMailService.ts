@@ -1,5 +1,6 @@
-import Email from 'src/models/Email';
-import MailAccountCode from 'src/models/smtp/MailAccountCode';
+import Email from '../models/utils/Email';
+import MailAccountCode from '../models/smtp/MailAccountCode';
+
 import Mailer from '../smtp/mailer';
 
 interface Mail {
