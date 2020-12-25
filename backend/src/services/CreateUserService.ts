@@ -1,15 +1,12 @@
-import { getCustomRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 
 import randomCode from '../utils/randomCode';
 
-import Email from '../models/utils/Email';
 import Password from '../models/utils/Password';
 import Users from '../models/entities/Users';
 
-import UsersRepositories from '../repositories/UsersRepositories';
-
 interface Request {
-  mail: Email;
+  email: string;
   user_name: string;
   name: string;
   password: Password;
@@ -18,11 +15,11 @@ interface Request {
 class CreateUserService {
   public execute = async ({
     name,
-    mail: { email },
+    email,
     password,
     user_name,
   }: Request): Promise<Users> => {
-    const usersRepositories = getCustomRepository(UsersRepositories);
+    const usersRepositories = getRepository(Users);
 
     const mailAlreadyCreated = await usersRepositories.findOne({
       where: { email },
@@ -36,20 +33,17 @@ class CreateUserService {
 
     if (userNameAlreadyCreated) throw new Error('user name already exist!');
 
-    const passwordEnCripyted = await password.cryptPassword();
+    const passwordCripyted = await password.cryptPassword();
 
     const user = usersRepositories.create({
       email,
-      password: passwordEnCripyted,
+      password: passwordCripyted,
       user_name,
       name,
-      user_avatar: 'default',
       verification_code: randomCode(6),
     });
 
     await usersRepositories.save(user);
-
-    user.password = undefined;
 
     return user;
   };

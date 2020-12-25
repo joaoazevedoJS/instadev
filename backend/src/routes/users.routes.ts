@@ -1,73 +1,33 @@
 import { Router } from 'express';
+import { getCustomRepository, getRepository } from 'typeorm';
 
-// import GetUserWithUsernameService from 'src/services/GetUserWithUsernameService';
-// import AcessAccountService from '../services/AcessAccountService';
-import SendCodeToMailService from '../services/SendCodeToMailService';
-import CreateUserService from '../services/CreateUserService';
-
-import Mailer from '../smtp/mailer';
-import Email from '../models/utils/Email';
-import Password from '../models/utils/Password';
-
-// import UsersRepositories from '../repositories/UsersRepositories';
-// import UsersFollowRepositories from '../repositories/UsersFollowRepositories';
+import Users from '../models/entities/Users';
+import FollowsRepositories from '../repositories/FollowsRepositories';
 
 const usersRoutes = Router();
 
-// const usersRepositories = new UsersRepositories();
-// const usersFollowRepositories = new UsersFollowRepositories();
-const mailer = new Mailer();
-
-usersRoutes.post('/signup', async (request, response) => {
+usersRoutes.get('/:user_name', async (request, response) => {
   try {
-    const { name, email, user_name, password } = request.body;
+    const { user_name } = request.params;
 
-    const mail = new Email(email);
-    const pass = new Password(password);
+    const usersRepositories = getRepository(Users);
 
-    const createUser = new CreateUserService();
+    const user = await usersRepositories.findOne({ where: { user_name } });
 
-    const user = await createUser.execute({
-      mail,
-      password: pass,
-      user_name,
-      name,
-    });
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' });
+    }
 
-    const sendCodeToMail = new SendCodeToMailService(mailer);
+    const followRepositories = getCustomRepository(FollowsRepositories);
 
-    await sendCodeToMail.execute({ mail, code: user.verification_code });
+    const follows = await followRepositories.getFollowsCountByUser(user.id);
 
-    return response.json(user);
-  } catch (err) {
-    return response.status(400).json({ error: err.message });
+    const userWithoutPassword = { ...user, password: undefined };
+
+    return response.json({ user: userWithoutPassword, follows });
+  } catch (error) {
+    return response.status(400).json({ message: error.message });
   }
 });
-
-// usersRoutes.post('/signin', async (request, response) => {
-//   try {
-//     const { email, password } = request.body;
-
-//     const acessAccount = new AcessAccountService(usersRepositories);
-
-//     const token = await acessAccount.execute({ email, password });
-
-//     return response.json({ token });
-//   } catch (err) {
-//     return response.status(400).json({ error: err.message });
-//   }
-// });
-
-// usersRoutes.get('/:user_name', async (request, response) => {
-//   const { user_name } = request.params;
-
-//   const getUserWithUsername = new GetUserWithUsernameService(usersRepositories);
-
-//   const user = await getUserWithUsername.execute(user_name);
-
-//   const follows = await usersFollowRepositories.getCountFollowsByUser(user.id);
-
-//   return response.json({ user, follows });
-// });
 
 export default usersRoutes;

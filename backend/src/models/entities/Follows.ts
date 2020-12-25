@@ -1,21 +1,35 @@
-class UsersFollow {
-  public id: number;
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
+import Users from './Users';
+
+@Entity('follows')
+class Follows {
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
+
+  @CreateDateColumn()
   public created_at: Date;
 
-  public user_id: number;
+  @UpdateDateColumn()
+  public updated_at: Date;
 
-  public following_id: number;
+  @Column()
+  user_id: string;
 
-  constructor({
-    user_id,
-    following_id,
-  }: Omit<UsersFollow, 'id' | 'created_at'>) {
-    this.following_id = following_id;
-    this.user_id = user_id;
+  @Column()
+  follow_id: string;
 
-    this.created_at = new Date();
-  }
+  @ManyToOne(() => Users)
+  @JoinColumn({ name: 'follow_id' })
+  follow: string;
 }
 
-export default UsersFollow;
+export default Follows;

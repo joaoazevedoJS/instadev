@@ -1,3 +1,4 @@
+import Mail from './Mail';
 import Email from '../utils/Email';
 
 interface MailAccountDTO {
@@ -5,27 +6,20 @@ interface MailAccountDTO {
   code: string;
 }
 
-class MailAccountCode {
-  public to: string;
-
-  public from: string;
-
-  public template: string;
-
+class MailAccountCode extends Mail {
   public context: {
     email: string;
     accountCode: string;
   };
 
   constructor({ mail, code }: MailAccountDTO) {
-    if (code.length !== 6) {
-      throw new Error('The code is not valid');
-    }
+    super({
+      mail,
+      from: 'no-reply@mail.instadev.com',
+      template: 'confirm_account',
+    });
 
-    this.to = mail.email;
     this.context = { email: mail.email, accountCode: code };
-    this.from = 'no-reply@mail.instadev.com';
-    this.template = 'confirm_account';
   }
 }
 

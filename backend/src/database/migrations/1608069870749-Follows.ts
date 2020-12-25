@@ -8,18 +8,18 @@ export default class Follows1608069870749 implements MigrationInterface {
         columns: [
           {
             name: 'id',
-            type: 'varchar',
+            type: 'uuid',
             isPrimary: true,
             generationStrategy: 'uuid',
             default: 'uuid_generate_v4()',
           },
           {
             name: 'user_id',
-            type: 'varchar',
+            type: 'uuid',
           },
           {
             name: 'follow_id',
-            type: 'varchar',
+            type: 'uuid',
           },
           {
             name: 'created_at',
@@ -34,7 +34,7 @@ export default class Follows1608069870749 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: 'FKUser',
+            name: 'FKUserId',
             columnNames: ['user_id'],
             referencedTableName: 'users',
             referencedColumnNames: ['id'],
@@ -42,7 +42,7 @@ export default class Follows1608069870749 implements MigrationInterface {
             onDelete: 'CASCADE',
           },
           {
-            name: 'FKUserFollow',
+            name: 'FKFollowId',
             columnNames: ['follow_id'],
             referencedTableName: 'users',
             referencedColumnNames: ['id'],

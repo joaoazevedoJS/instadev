@@ -14,7 +14,7 @@ export interface IMailerhandlebarsOptions {
   extName: string;
 }
 
-class Mailer {
+abstract class Mailer {
   private transport = nodemailer.createTransport({ host, port, auth });
 
   private mailsPath = path.resolve(__dirname, 'mails');

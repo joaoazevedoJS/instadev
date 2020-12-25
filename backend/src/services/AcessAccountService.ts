@@ -1,22 +1,25 @@
 import bcrypt from 'bcryptjs';
+import { getRepository } from 'typeorm';
 
-import GenerateToken from '../utils/GenerateToken';
-import UsersRepositories from '../repositories/UsersRepositories';
+import Users from '../models/entities/Users';
+
+import createToken from '../auth/createToken';
 
 interface Request {
   email: string;
   password: string;
 }
 
+interface Response {
+  user: Users;
+  token: string;
+}
+
 class AcessAccountService {
-  private usersRepositories: UsersRepositories;
+  public execute = async ({ email, password }: Request): Promise<Response> => {
+    const usersRepositories = getRepository(Users);
 
-  constructor(usersRepositories: UsersRepositories) {
-    this.usersRepositories = usersRepositories;
-  }
-
-  public execute = async ({ email, password }: Request): Promise<string> => {
-    const user = await this.usersRepositories.getUserByMail(email);
+    const user = await usersRepositories.findOne({ where: { email } });
 
     if (!user) {
       throw new Error('Incorrect email/password combination');
@@ -28,9 +31,9 @@ class AcessAccountService {
       throw new Error('Incorrect email/password combination');
     }
 
-    const token = GenerateToken(user.id);
+    const token = createToken(user.id);
 
-    return token;
+    return { user, token };
   };
 }
 

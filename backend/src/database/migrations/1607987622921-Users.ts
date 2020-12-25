@@ -10,7 +10,7 @@ export default class Users1607987622921 implements MigrationInterface {
         columns: [
           {
             name: 'id',
-            type: 'varchar',
+            type: 'uuid',
             isPrimary: true,
             generationStrategy: 'uuid',
             default: 'uuid_generate_v4()',
@@ -36,6 +36,7 @@ export default class Users1607987622921 implements MigrationInterface {
           {
             name: 'user_avatar',
             type: 'varchar',
+            isNullable: true,
           },
           {
             name: 'verified_account',
