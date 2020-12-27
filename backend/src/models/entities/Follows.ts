@@ -2,13 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-import Users from './Users';
 
 @Entity('follows')
 class Follows {
@@ -26,10 +22,6 @@ class Follows {
 
   @Column()
   follow_id: string;
-
-  @ManyToOne(() => Users)
-  @JoinColumn({ name: 'follow_id' })
-  follow: string;
 }
 
 export default Follows;

@@ -1,9 +1,9 @@
 import { getRepository } from 'typeorm';
 
-import randomCode from '../utils/randomCode';
-
 import Password from '../models/utils/Password';
 import Users from '../models/entities/Users';
+
+import RandomCode from '../auth/RandomCode';
 
 interface Request {
   email: string;
@@ -40,7 +40,7 @@ class CreateUserService {
       password: passwordCripyted,
       user_name,
       name,
-      verification_code: randomCode(6),
+      verification_code: RandomCode(),
     });
 
     await usersRepositories.save(user);

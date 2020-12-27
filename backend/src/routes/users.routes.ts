@@ -1,33 +1,71 @@
 import { Router } from 'express';
-import { getCustomRepository, getRepository } from 'typeorm';
 
-import Users from '../models/entities/Users';
-import FollowsRepositories from '../repositories/FollowsRepositories';
+import Authorization from '../middlewares/Authorization';
+
+import CreateFollowService from '../services/CreateFollowService';
+import DeleteFollowService from '../services/DeleteFollowService';
+import GetUserInfoByUsernameService from '../services/GetUserInfoByUsernameService';
+import ValidateUUIDService from '../services/ValidateUUIDService';
 
 const usersRoutes = Router();
 
+usersRoutes.post(
+  '/follows/:follow_id',
+  Authorization,
+  async (request, response) => {
+    const { follow_id } = request.params;
+    const { id } = request.user;
+
+    const validateUUID = new ValidateUUIDService();
+
+    validateUUID.execute(follow_id);
+
+    const createFollow = new CreateFollowService();
+
+    const follow = await createFollow.execute({ follow_id, user_id: id });
+
+    return response.status(201).json(follow);
+  },
+);
+
+usersRoutes.delete(
+  '/follows/:follow_id',
+  Authorization,
+  async (request, response) => {
+    const { follow_id } = request.params;
+    const { id } = request.user;
+
+    const validateUUID = new ValidateUUIDService();
+
+    validateUUID.execute(follow_id);
+
+    const deleteFollow = new DeleteFollowService();
+
+    await deleteFollow.execute({ follow_id, user_id: id });
+
+    return response.status(204).send();
+  },
+);
+
 usersRoutes.get('/:user_name', async (request, response) => {
-  try {
-    const { user_name } = request.params;
+  const { user_name } = request.params;
 
-    const usersRepositories = getRepository(Users);
+  const getUserInfoByUsername = new GetUserInfoByUsernameService();
 
-    const user = await usersRepositories.findOne({ where: { user_name } });
+  const info = await getUserInfoByUsername.execute(user_name);
 
-    if (!user) {
-      return response.status(404).json({ message: 'User not found' });
-    }
+  const userWithoutPassword = {
+    ...info.user,
+    password: undefined,
+    verification_code: undefined,
+  };
 
-    const followRepositories = getCustomRepository(FollowsRepositories);
+  const infoWithoutPassword = {
+    ...info,
+    user: userWithoutPassword,
+  };
 
-    const follows = await followRepositories.getFollowsCountByUser(user.id);
-
-    const userWithoutPassword = { ...user, password: undefined };
-
-    return response.json({ user: userWithoutPassword, follows });
-  } catch (error) {
-    return response.status(400).json({ message: error.message });
-  }
+  return response.json({ ...infoWithoutPassword });
 });
 
 export default usersRoutes;

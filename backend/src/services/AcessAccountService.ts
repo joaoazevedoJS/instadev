@@ -1,9 +1,9 @@
-import bcrypt from 'bcryptjs';
+import { compare } from 'bcryptjs';
 import { getRepository } from 'typeorm';
 
 import Users from '../models/entities/Users';
 
-import createToken from '../auth/createToken';
+import Token from '../auth/Token';
 
 interface Request {
   email: string;
@@ -25,13 +25,13 @@ class AcessAccountService {
       throw new Error('Incorrect email/password combination');
     }
 
-    const passwordIsEquals = await bcrypt.compare(password, user.password);
+    const passwordIsEquals = await compare(password, user.password);
 
     if (!passwordIsEquals) {
       throw new Error('Incorrect email/password combination');
     }
 
-    const token = createToken(user.id);
+    const token = Token(user.id);
 
     return { user, token };
   };

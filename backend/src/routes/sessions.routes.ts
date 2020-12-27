@@ -33,7 +33,7 @@ sessionsRoutes.post('/signup', async (request, response) => {
       code: user.verification_code,
     });
 
-    await sendMail.execute(mailAccount);
+    sendMail.execute(mailAccount);
 
     const userWithoutPassword = { ...user, password: undefined };
 

@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import hbs from 'nodemailer-express-handlebars';
 
-import { host, port, auth } from '../configs/mail.json';
+import mail from '../configs/mail';
 
 export interface IMailerhandlebarsOptions {
   viewEngine: {
@@ -15,7 +15,7 @@ export interface IMailerhandlebarsOptions {
 }
 
 abstract class Mailer {
-  private transport = nodemailer.createTransport({ host, port, auth });
+  private transport = nodemailer.createTransport(mail);
 
   private mailsPath = path.resolve(__dirname, 'mails');
 
