@@ -1,13 +1,18 @@
 import { Router } from 'express';
 
+import multer from 'multer';
+import uploadConfig from '../configs/upload';
+
 import Authorization from '../middlewares/Authorization';
 
-import CreateFollowService from '../services/CreateFollowService';
-import DeleteFollowService from '../services/DeleteFollowService';
-import GetUserInfoByUsernameService from '../services/GetUserInfoByUsernameService';
-import ValidateUUIDService from '../services/ValidateUUIDService';
+import CreateFollowService from '../services/UsersService/CreateFollowService';
+import DeleteFollowService from '../services/UsersService/DeleteFollowService';
+import GetUserInfoByUsernameService from '../services/UsersService/GetUserInfoByUsernameService';
+import ValidateUUIDService from '../auth/ValidateUUIDService';
+import UpdateUserAvatarService from '../services/UsersService/UpdateUserAvatarService';
 
 const usersRoutes = Router();
+const upload = multer(uploadConfig);
 
 usersRoutes.post(
   '/follows/:follow_id',
@@ -16,9 +21,7 @@ usersRoutes.post(
     const { follow_id } = request.params;
     const { id } = request.user;
 
-    const validateUUID = new ValidateUUIDService();
-
-    validateUUID.execute(follow_id);
+    ValidateUUIDService(follow_id);
 
     const createFollow = new CreateFollowService();
 
@@ -35,13 +38,27 @@ usersRoutes.delete(
     const { follow_id } = request.params;
     const { id } = request.user;
 
-    const validateUUID = new ValidateUUIDService();
-
-    validateUUID.execute(follow_id);
+    ValidateUUIDService(follow_id);
 
     const deleteFollow = new DeleteFollowService();
 
     await deleteFollow.execute({ follow_id, user_id: id });
+
+    return response.status(204).send();
+  },
+);
+
+usersRoutes.patch(
+  '/avatar',
+  Authorization,
+  upload.single('avatar'),
+  async (request, response) => {
+    const { id } = request.user;
+    const { filename } = request.file;
+
+    const updateUserAvatar = new UpdateUserAvatarService();
+
+    await updateUserAvatar.execute({ user_id: id, filename });
 
     return response.status(204).send();
   },

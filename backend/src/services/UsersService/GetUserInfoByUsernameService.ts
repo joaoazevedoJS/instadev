@@ -1,9 +1,9 @@
 import { getCustomRepository, getRepository } from 'typeorm';
 
-import Users from '../models/entities/Users';
-import FollowsRepositories from '../repositories/FollowsRepositories';
+import Users from '../../models/entities/Users';
+import FollowsRepositories from '../../repositories/FollowsRepositories';
 
-import AppError from '../errors/AppError';
+import AppError from '../../errors/AppError';
 
 interface Response {
   user: Users;

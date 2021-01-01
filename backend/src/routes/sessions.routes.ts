@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import { parseISO } from 'date-fns';
 
 import AcessAccountService from '../services/AcessAccountService';
-import SendMailService from '../services/SendMailService';
-import CreateUserService from '../services/CreateUserService';
+import SendMailService from '../services/MailsService/SendMailService';
+import CreateUserService from '../services/UsersService/CreateUserService';
 
 import Email from '../models/utils/Email';
 import Password from '../models/utils/Password';
@@ -12,10 +13,11 @@ const sessionsRoutes = Router();
 
 sessionsRoutes.post('/signup', async (request, response) => {
   try {
-    const { name, email, user_name, password } = request.body;
+    const { name, email, user_name, password, birthday } = request.body;
 
     const mail = new Email(email);
     const pass = new Password(password);
+    const parseDate = parseISO(birthday);
 
     const createUser = new CreateUserService();
 
@@ -24,6 +26,7 @@ sessionsRoutes.post('/signup', async (request, response) => {
       password: pass,
       user_name,
       name,
+      birthday: parseDate,
     });
 
     const sendMail = new SendMailService();
@@ -37,7 +40,7 @@ sessionsRoutes.post('/signup', async (request, response) => {
 
     const userWithoutPassword = { ...user, password: undefined };
 
-    return response.json({ user: userWithoutPassword });
+    return response.status(201).json({ user: userWithoutPassword });
   } catch (err) {
     return response.status(400).json({ error: err.message });
   }
@@ -53,7 +56,7 @@ sessionsRoutes.post('/signin', async (request, response) => {
 
     const userWithoutPassword = { ...user, password: undefined };
 
-    return response.json({ token, user: userWithoutPassword });
+    return response.status(201).json({ token, user: userWithoutPassword });
   } catch (err) {
     return response.status(400).json({ error: err.message });
   }

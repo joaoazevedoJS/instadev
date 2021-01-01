@@ -26,6 +26,9 @@ class Users {
   @Column()
   public user_avatar: string;
 
+  @Column('time with time zone')
+  public birthday: Date;
+
   @Column('bool')
   public verified_account: boolean;
 

@@ -4,6 +4,7 @@ import { getRepository } from 'typeorm';
 import Users from '../models/entities/Users';
 
 import Token from '../auth/Token';
+import AppError from '../errors/AppError';
 
 interface Request {
   email: string;
@@ -22,13 +23,13 @@ class AcessAccountService {
     const user = await usersRepositories.findOne({ where: { email } });
 
     if (!user) {
-      throw new Error('Incorrect email/password combination');
+      throw new AppError('Incorrect email/password combination', 401);
     }
 
     const passwordIsEquals = await compare(password, user.password);
 
     if (!passwordIsEquals) {
-      throw new Error('Incorrect email/password combination');
+      throw new AppError('Incorrect email/password combination', 401);
     }
 
     const token = Token(user.id);

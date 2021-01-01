@@ -1,11 +1,11 @@
 import { getCustomRepository, getRepository } from 'typeorm';
 
-import FollowsRepositories from '../repositories/FollowsRepositories';
+import FollowsRepositories from '../../repositories/FollowsRepositories';
 
-import Follows from '../models/entities/Follows';
-import Users from '../models/entities/Users';
+import Follows from '../../models/entities/Follows';
+import Users from '../../models/entities/Users';
 
-import AppError from '../errors/AppError';
+import AppError from '../../errors/AppError';
 
 interface Request {
   user_id: string;
@@ -20,7 +20,7 @@ class CreateFollowService {
     const user = await usersRepositories.findOne(user_id);
 
     if (!user) {
-      throw new AppError('User not found', 404);
+      throw new AppError('Only authenticated users', 401);
     }
 
     const isAlreadyFollow = await followsRepositories.findOne({

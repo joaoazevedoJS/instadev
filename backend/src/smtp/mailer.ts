@@ -29,7 +29,7 @@ abstract class Mailer {
     return handlebars;
   };
 
-  public useTransport = (): Mail => {
+  protected useTransport = (): Mail => {
     return this.transport.use('compile', hbs(this.handleBars()));
   };
 }

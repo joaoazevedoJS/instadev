@@ -1,3 +1,2 @@
-# Database SQLite
-*.sqlite
-model/
+/temp/*
+!temp/.gitKeep
