@@ -1,4 +1,12 @@
-export default {
-  hash: '30b983b28a2e585af7e782e24cb9655c',
+import { SignOptions } from 'jsonwebtoken';
+
+const signOptions: SignOptions = {
   expiresIn: '1d',
+  algorithm: 'RS256',
+};
+
+export default {
+  privateKey: process.env.JWT_PRIVATE_KEY || 'default',
+  publicKey: process.env.JWT_PUBLIC_KEY || 'default',
+  signOptions,
 };

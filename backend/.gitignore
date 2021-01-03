@@ -1,2 +1,4 @@
 /temp/*
 !temp/.gitKeep
+.env
+ormconfig.json

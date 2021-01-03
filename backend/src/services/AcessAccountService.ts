@@ -3,7 +3,7 @@ import { getRepository } from 'typeorm';
 
 import Users from '../models/entities/Users';
 
-import Token from '../auth/Token';
+import CreateToken from '../auth/CreateToken';
 import AppError from '../errors/AppError';
 
 interface Request {
@@ -32,7 +32,7 @@ class AcessAccountService {
       throw new AppError('Incorrect email/password combination', 401);
     }
 
-    const token = Token(user.id);
+    const token = CreateToken(user.id);
 
     return { user, token };
   };

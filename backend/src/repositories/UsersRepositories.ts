@@ -19,12 +19,12 @@ class UsersRepositories extends Repository<Users> {
       user.mail_resend_count = 0;
     }
 
+    user.mail_resend_count += 1;
+    user.verification_code = code;
+
     if (user.mail_resend_count >= 3) {
       user.mail_limit_date_resend = addDays(timenow, 1);
     }
-
-    user.mail_resend_count += 1;
-    user.verification_code = code;
 
     await this.save(user);
   }

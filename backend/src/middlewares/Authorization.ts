@@ -26,7 +26,7 @@ function Authorization(req: Request, res: Response, next: NextFunction): void {
   }
 
   try {
-    const { sub } = verify(token, authConfig.hash) as TokenPayload;
+    const { sub } = verify(token, authConfig.publicKey) as TokenPayload;
 
     req.user = { id: sub };
 

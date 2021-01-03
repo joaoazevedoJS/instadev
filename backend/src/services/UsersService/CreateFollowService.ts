@@ -23,6 +23,12 @@ class CreateFollowService {
       throw new AppError('Only authenticated users', 401);
     }
 
+    const user_follow = await usersRepositories.findOne(follow_id);
+
+    if (!user_follow) {
+      throw new AppError('User not found', 404);
+    }
+
     const isAlreadyFollow = await followsRepositories.findOne({
       where: { follow_id, user_id },
     });
